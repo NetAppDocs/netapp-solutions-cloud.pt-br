@@ -1,0 +1,85 @@
+---
+section: rhhc
+title: Multicloud híbrida da NetApp com Red Hat OpenShift
+url: "/rhhc/index.html"
+entries:
+- title: Começar
+  pdf-filename: Red Hat Openshift para multicloud híbrida
+  entries:
+  - title: Visão geral da solução
+    url: "/openshift/os-solutions-overview.html"
+  - title: Propostas de valor
+    url: "/openshift/os-solutions-value-prop.html"
+  - title: Soluções validadas
+    url: "/openshift/os-solutions-validated.html"
+  - title: Versões validadas
+    url: "/openshift/os-solutions-versions.html"
+  - title: Opções de armazenamento suportadas
+    url: "/openshift/os-solutions-storage-options.html"
+  - title: Recursos adicionais
+    url: "/openshift/os-solutions-resources.html"
+- title: Openshift para instalações locais
+  pdf-filename: Red Hat Openshift para instalações locais
+  entries:
+  - title: Visão geral da solução
+    url: "/openshift/os-op-solution.html"
+  - title: Configurar cargas de trabalho de contêiner OpenShift no VMware
+    url: "/openshift/os-op-setup.html"
+  - title: Proteja cargas de trabalho de contêiner no VMware
+    url: "/openshift/os-op-data-protection.html"
+  - title: Migrar cargas de trabalho de contêiner no VMware
+    url: "/openshift/os-op-data-migration.html"
+- title: Nuvem híbrida com componentes autogerenciados
+  pdf-filename: Nuvem híbrida com componentes autogerenciados do Red Hat OpenShift
+    (local/AWS/GCP/Azure)
+  entries:
+  - title: Visão geral da solução
+    url: "/openshift/os-sm-solution.html"
+  - title: Configurar cargas de trabalho de contêiner OpenShift na AWS
+    url: "/openshift/os-sm-setup.html"
+  - title: Configurar cargas de trabalho de contêiner OpenShift no GCP
+    url: "/openshift/os-sm-gcp-setup.html"
+  - title: Configurar cargas de trabalho de contêiner OpenShift no Azure
+    url: "/openshift/os-sm-azure-setup.html"
+  - title: Proteja cargas de trabalho de contêineres na AWS/GCP/Azure
+    url: "/openshift/os-sm-data-protection.html"
+  - title: Migrar cargas de trabalho de contêiner para AWS/GCP/Azure
+    url: "/openshift/os-sm-data-migration.html"
+- title: Nuvem híbrida com componentes gerenciados pelo provedor
+  pdf-filename: Nuvem híbrida com componentes gerenciados pelo provedor Red Hat OpenShift
+  entries:
+  - title: Visão geral da solução
+    url: "/openshift/os-pm-solution.html"
+  - title: Configurar cargas de trabalho de contêiner OpenShift na AWS
+    url: "/openshift/os-pm-setup.html"
+  - title: Configurar o OpenShift Dedicated no Google Cloud
+    url: "/openshift/os-pm-gcnv-setup.html"
+  - title: Proteja cargas de trabalho de contêineres na AWS
+    url: "/openshift/os-pm-aws-dp.html"
+  - title: Migrar cargas de trabalho de contêiner na AWS
+    url: "/openshift/os-pm-aws-data-migration.html"
+  - title: Soluções ROSA adicionais para contêineres e virtualização
+    url: "/openshift/os-pm-rosa-additional.html"
+- title: Proteja os dados usando o Trident Protect
+  pdf-filename: Proteção de dados usando Trident Protect
+  entries:
+  - title: Proteja aplicativos de contêiner usando o Trident Protect
+    url: "/openshift/os-dp-tp-solution.html"
+  - title: Proteja VMs usando o Trident Protect
+    url: "/openshift/osv-vm-dp-using-tp.html"
+- title: Proteja aplicativos de contêiner usando ferramentas de terceiros
+  pdf-filename: Proteção de dados de aplicativos de contêiner usando ferramentas de
+    terceiros
+  entries:
+  - title: Visão geral da solução
+    url: "/openshift/os-dp-velero-solution.html"
+  - title: Instalar OADP
+    url: "/openshift/os-dp-velero-installation.html"
+  - title: Aplicativos de contêiner de backup usando Velero
+    url: "/openshift/os-dp-velero-backup.html"
+  - title: Migrar aplicativos
+    url: "/openshift/os-dp-velero-migrate.html"
+  - title: Restaurar a partir de backup usando Velero
+    url: "/openshift/os-dp-velero-restore.html"
+  - title: Excluir backups e restaurações
+    url: "/openshift/os-dp-velero-delete.html"

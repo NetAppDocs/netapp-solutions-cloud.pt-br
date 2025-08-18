@@ -1,0 +1,49 @@
+---
+sidebar: sidebar 
+permalink: openshift/os-pm-aws-data-migration.html 
+keywords: NetApp Solutions, redhat OpenShift, red hat OpenShift, redhat openshift container platform, ocp, openshift container platform, Advanced Cluster Management, ACM, Hub Cluster, containers, container workloads, VMware, customer managed storage, ONTAP, Ansible Automation Platform, BlueXP 
+summary:  
+---
+= Migração de dados
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Esta página mostra as opções de migração de dados para cargas de trabalho de contêiner em clusters Managed Red Hat OpenShift usando FSx ONTAP para armazenamento persistente.
+
+
+
+== Migração de dados
+
+O serviço Red Hat OpenShift na AWS, bem como o Amazon FSx for NetApp ONTAP (FSx ONTAP), fazem parte do portfólio de serviços da AWS.  O FSx ONTAP está disponível em opções de AZ única ou AZ múltipla.  A opção Multi-Az fornece proteção de dados contra falhas na zona de disponibilidade.  O FSx ONTAP pode ser integrado ao Trident para fornecer armazenamento persistente para aplicativos em clusters ROSA.
+
+
+
+=== Integração do FSx ONTAP com Trident usando gráfico Helm
+
+.Integração do cluster ROSA com o Amazon FSx ONTAP
+video::621ae20d-7567-4bbf-809d-b01200fa7a68[panopto]
+A migração de aplicativos de contêiner envolve:
+
+* Volumes persistentes: isso pode ser feito usando o BlueXP.  Outra opção é usar o Trident Protect para lidar com migrações de aplicativos de contêiner do ambiente local para o ambiente de nuvem.  A automação pode ser usada para o mesmo propósito.
+* Metadados do aplicativo: isso pode ser feito usando o OpenShift GitOps (Argo CD).
+
+
+
+
+=== Failover e Fail-back de aplicações no cluster ROSA usando FSx ONTAP para armazenamento persistente
+
+O vídeo a seguir é uma demonstração de cenários de failover e failback de aplicativos usando BlueXP e Argo CD.
+
+.Failover e Fail-back de aplicações no cluster ROSA
+video::e9a07d79-42a1-4480-86be-b01200fa62f5[panopto]
+
+
+=== Solução de proteção e migração de dados para cargas de trabalho do OpenShift Container
+
+image:rhhc-rosa-with-fsxn.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]

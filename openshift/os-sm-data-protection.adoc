@@ -1,0 +1,83 @@
+---
+sidebar: sidebar 
+permalink: openshift/os-sm-data-protection.html 
+keywords: NetApp Solutions, redhat OpenShift, red hat OpenShift, redhat openshift container platform, ocp, openshift container platform, Advanced Cluster Management, ACM, Hub Cluster, containers, container workloads, VMware, customer managed storage, ONTAP 
+summary:  
+---
+= Proteção de dados usando Trident Protect
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Esta página mostra as opções de proteção de dados para aplicativos baseados em Red Hat OpenShift Container em execução no VMware vSphere ou na nuvem usando o Trident Protect (ACC).
+
+À medida que os usuários avançam na jornada de modernização de seus aplicativos com o Red Hat OpenShift, uma estratégia de proteção de dados deve ser implementada para protegê-los contra exclusão acidental ou quaisquer outros erros humanos.  Muitas vezes, uma estratégia de proteção também é necessária para fins regulatórios ou de conformidade para proteger seus dados de um desastre.
+
+Os requisitos de proteção de dados variam desde a reversão para uma cópia de um ponto no tempo até o failover automático para um domínio de falha diferente, sem qualquer intervenção humana.  Muitos clientes escolhem o ONTAP como sua plataforma de armazenamento preferida para seus aplicativos Kubernetes por causa de seus recursos avançados, como multilocação, multiprotocolo, ofertas de alto desempenho e capacidade, replicação e armazenamento em cache para locais de vários sites, segurança e flexibilidade.
+
+Os clientes podem ter um ambiente de nuvem configurado como uma extensão do seu data center, para que possam aproveitar os benefícios da nuvem e também estar bem posicionados para mover suas cargas de trabalho no futuro.  Para esses clientes, fazer backup de seus aplicativos OpenShift e seus dados no ambiente de nuvem se torna uma escolha inevitável.  Eles podem então restaurar os aplicativos e os dados associados em um cluster OpenShift na nuvem ou em seu data center.
+
+
+
+== Backup e restauração com ACC
+
+Os proprietários dos aplicativos podem revisar e atualizar os aplicativos descobertos pelo ACC.  O Trident Protect pode fazer cópias de Snapshot usando CSI e executar backup usando a cópia de Snapshot de um momento específico.  O destino do backup pode ser um armazenamento de objetos no ambiente de nuvem.  A política de proteção pode ser configurada para backups agendados e o número de versões de backup a serem mantidas.  O RPO mínimo é de uma hora.
+
+
+
+=== Restaurando um aplicativo de um backup usando ACC
+
+image:rhhc-onprem-dp-br.png["Opção de restauração do Trident Protect"]
+
+
+
+== Ganchos de execução específicos do aplicativo
+
+Embora os recursos de proteção de dados em nível de matriz de armazenamento estejam disponíveis, muitas vezes são necessárias etapas adicionais para tornar os backups e restaurações consistentes com os aplicativos.  As etapas adicionais específicas do aplicativo podem ser: - antes ou depois da criação de uma cópia do Snapshot.  - antes ou depois que um backup é criado.  - após restaurar a partir de uma cópia de Snapshot ou backup.
+
+O Trident Protect pode executar essas etapas específicas do aplicativo codificadas como scripts personalizados chamados ganchos de execução.
+
+da NetApplink:https://github.com/NetApp/Verda["projeto de código aberto Verda"] fornece ganchos de execução para aplicativos nativos de nuvem populares para tornar a proteção de aplicativos simples, robusta e fácil de orquestrar.  Sinta-se à vontade para contribuir com esse projeto se você tiver informações suficientes para um aplicativo que não esteja no repositório.
+
+
+
+== Exemplo de gancho de execução para pré-instantâneo de um aplicativo Redis.
+
+image:rhhc-onprem-dp-br-hook.png["Gancho de execução do Trident Protect"]
+
+
+
+== Replicação com ACC
+
+Para proteção regional ou para uma solução de baixo RPO e RTO, um aplicativo pode ser replicado para outra instância do Kubernetes em execução em um site diferente, de preferência em outra região.  O Trident Protect utiliza o SnapMirror assíncrono ONTAP com RPO de apenas 5 minutos.  Referirlink:https://docs.netapp.com/us-en/astra-control-center/use/replicate_snapmirror.html["aqui"] para obter instruções de configuração do SnapMirror .
+
+
+
+=== SnapMirror com ACC
+
+image:rhhc-onprem-dp-rep.png["Replicação do Trident Protect"]
+
+
+NOTE: Os drivers de armazenamento san-economy e nas-economy não suportam o recurso de replicação.  Referirlink:https://docs.netapp.com/us-en/astra-control-center/get-started/requirements.html#astra-trident-requirements["aqui"] para obter detalhes adicionais.
+
+
+
+=== Vídeo de demonstração:
+
+link:https://www.netapp.tv/details/29504?mcid=35609780286441704190790628065560989458["Vídeo de demonstração de recuperação de desastres com Trident Protect"]
+
+.Proteção de dados com Trident Protect
+video::0cec0c90-4c6f-4018-9e4f-b09700eefb3a[panopto,width=360]
+Detalhes sobre os recursos de proteção de dados do Trident Protect estão disponíveislink:https://docs.netapp.com/us-en/astra-control-center/concepts/data-protection.html["aqui"]
+
+
+
+== Recuperação de desastres (Failover e Failback usando replicação) com ACC
+
+.Usando o Astra Control para failover e failback de aplicativos
+video::1546191b-bc46-42eb-ac34-b0d60142c58d[panopto,width=360]

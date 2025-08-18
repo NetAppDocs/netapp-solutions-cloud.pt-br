@@ -1,0 +1,352 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-azure-avs-migrate-hcx.html 
+keywords: azure, avs, hybrid multicloud, migrate, vmware hcx, hcx 
+summary:  
+---
+= TR-4940: Migrar cargas de trabalho para o repositório de dados do Azure NetApp Files usando o VMware HCX - Guia de início rápido
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Um dos casos de uso mais comuns para o Azure VMware Solution e o armazenamento de dados do Azure NetApp Files é a migração de cargas de trabalho do VMware.  O VMware HCX é uma opção preferencial e fornece vários mecanismos de migração para mover máquinas virtuais (VMs) locais e seus dados para armazenamentos de dados do Azure NetApp Files .
+
+
+
+== Visão geral: Migrando máquinas virtuais com VMware HCX, repositórios de dados do Azure NetApp Files e solução Azure VMware
+
+O VMware HCX é principalmente uma plataforma de migração projetada para simplificar a migração de aplicativos, o rebalanceamento de carga de trabalho e até mesmo a continuidade dos negócios entre nuvens.  Ele está incluído como parte do Azure VMware Solution Private Cloud e oferece muitas maneiras de migrar cargas de trabalho e pode ser usado para operações de recuperação de desastres (DR).
+
+Este documento fornece orientação passo a passo para provisionar o armazenamento de dados do Azure NetApp Files, seguido pelo download, implantação e configuração do VMware HCX, incluindo todos os seus principais componentes no local e no lado da solução VMware do Azure, incluindo interconexão, extensão de rede e otimização de WAN para habilitar vários mecanismos de migração de VM.
+
+
+NOTE: O VMware HCX funciona com qualquer tipo de armazenamento de dados, pois a migração ocorre no nível da VM.  Portanto, este documento é aplicável a clientes atuais da NetApp e clientes não pertencentes à NetApp que planejam implantar o Azure NetApp Files com o Azure VMware Solution para uma implantação de nuvem VMware econômica.
+
+.Etapas de alto nível
+[%collapsible%open]
+====
+Esta lista fornece as etapas gerais necessárias para instalar e configurar o HCX Cloud Manager no lado da nuvem do Azure e instalar o HCX Connector no local:
+
+. Instale o HCX por meio do portal do Azure.
+. Baixe e implante o instalador do HCX Connector Open Virtualization Appliance (OVA) no VMware vCenter Server local.
+. Ative o HCX com a chave de licença.
+. Emparelhe o VMware HCX Connector local com o Azure VMware Solution HCX Cloud Manager.
+. Configure o perfil de rede, o perfil de computação e a malha de serviço.
+. (Opcional) Execute a extensão da rede para evitar a troca de IP durante migrações.
+. Valide o status do dispositivo e garanta que a migração seja possível.
+. Migre as cargas de trabalho da VM.
+
+
+====
+.Pré-requisitos
+[%collapsible%open]
+====
+Antes de começar, certifique-se de que os seguintes pré-requisitos sejam atendidos.  Para mais informações, consulte isto https://docs.microsoft.com/en-us/azure/azure-vmware/configure-vmware-hcx["link"^] .  Depois que os pré-requisitos, incluindo conectividade, estiverem prontos, configure e ative o HCX gerando a chave de licença no portal do Azure VMware Solution.  Após o download do instalador do OVA, prossiga com o processo de instalação conforme descrito abaixo.
+
+
+NOTE: O HCX Advanced é a opção padrão e a edição VMware HCX Enterprise também está disponível por meio de um tíquete de suporte e tem suporte sem custo adicional.
+
+* Use um data center definido por software (SDDC) de solução VMware do Azure existente ou crie uma nuvem privada usando estelink:vmw-azure-avs-setup.html["Link da NetApp"^] ou isto https://docs.microsoft.com/en-us/azure/azure-vmware/deploy-azure-vmware-solution?tabs=azure-portal["Link da Microsoft"^] .
+* A migração de VMs e dados associados do data center habilitado para VMware vSphere local requer conectividade de rede do data center para o ambiente SDDC.  Antes de migrar cargas de trabalho, https://docs.microsoft.com/en-us/azure/azure-vmware/tutorial-expressroute-global-reach-private-cloud["configurar uma conexão VPN site a site ou uma conexão de alcance global de rota expressa"^] entre o ambiente local e a respectiva nuvem privada.
+* O caminho de rede do ambiente VMware vCenter Server local para a nuvem privada do Azure VMware Solution deve dar suporte à migração de VMs usando o vMotion.
+* Certifique-se de que o necessário https://learn.microsoft.com/en-us/azure/azure-vmware/tutorial-network-checklist?source=recommendations["regras e portas de firewall"^] são permitidos para tráfego vMotion entre o vCenter Server local e o SDDC vCenter.  Na nuvem privada, o roteamento na rede vMotion é configurado por padrão.
+* O volume NFS do Azure NetApp Files deve ser montado como um armazenamento de dados no Azure VMware Solution.  Siga os passos detalhados neste https://learn.microsoft.com/en-us/azure/azure-vmware/attach-azure-netapp-files-to-azure-vmware-solution-hosts?tabs=azure-portal["link"^] para anexar armazenamentos de dados do Azure NetApp Files aos hosts do Azure VMware Solutions.
+
+
+====
+.Arquitetura de Alto Nível
+[%collapsible%open]
+====
+Para fins de teste, o ambiente de laboratório local usado para esta validação foi conectado por meio de uma VPN site a site, que permite conectividade local com o Azure VMware Solution.
+
+image:anfd-hcx-001.png["Esta imagem descreve a arquitetura de alto nível usada nesta solução."]
+
+====
+
+
+== Implantação de solução
+
+Siga a série de etapas para concluir a implantação desta solução:
+
+.Etapa 1: instalar o HCX por meio do Portal do Azure usando a opção Complementos
+[%collapsible%open]
+====
+Para executar a instalação, siga os seguintes passos:
+
+. Efetue login no Portal do Azure e acesse a nuvem privada do Azure VMware Solution.
+. Selecione a nuvem privada apropriada e acesse os complementos.  Isso pode ser feito navegando até *Gerenciar > Complementos*.
+. Na seção Mobilidade de carga de trabalho do HCX, clique em *Começar*.
++
+image:anfd-hcx-002.png["Captura de tela da seção Mobilidade de carga de trabalho do HCX."]
+
+. Selecione a opção *Concordo com os Termos e Condições* e clique em *Ativar e Implantar*.
++
+
+NOTE: A implantação padrão é o HCX Advanced.  Abra uma solicitação de suporte para habilitar a edição Enterprise.
+
++
+
+NOTE: A implantação leva aproximadamente de 25 a 30 minutos.
+
++
+image:anfd-hcx-003.png["Captura de tela da conclusão da seção Mobilidade de carga de trabalho do HCX."]
+
+
+
+====
+.Etapa 2: implantar o instalador OVA no vCenter Server local
+[%collapsible%open]
+====
+Para que o conector local se conecte ao HCX Manager no Azure VMware Solution, certifique-se de que as portas de firewall apropriadas estejam abertas no ambiente local.
+
+Para baixar e instalar o HCX Connector no vCenter Server local, conclua as seguintes etapas:
+
+. No portal do Azure, acesse a Solução VMware do Azure, selecione a nuvem privada e selecione *Gerenciar > Complementos > Migração* usando HCX e copie o portal do HCX Cloud Manager para baixar o arquivo OVA.
++
+
+NOTE: Use as credenciais de usuário padrão do CloudAdmin para acessar o portal HCX.
+
++
+image:anfd-hcx-004.png["Captura de tela do portal do Azure para baixar o arquivo HCX OVA."]
+
+. Depois de acessar o portal HCX com mailto:cloudadmin@vsphere.local[cloudadmin@vsphere.local^] usando o jumphost, navegue até *Administração > Atualizações do sistema* e clique em *Solicitar link de download*.
++
+
+NOTE: Baixe ou copie o link para o OVA e cole-o em um navegador para iniciar o processo de download do arquivo OVA do VMware HCX Connector para implantação no vCenter Server local.
+
++
+image:anfd-hcx-005.png["Captura de tela do link para download do OVA."]
+
+. Após o download do OVA, implante-o no ambiente VMware vSphere local usando a opção *Implantar modelo OVF*.
++
+image:anfd-hcx-006.png["Captura de tela para selecionar o modelo OVA correto."]
+
+. Insira todas as informações necessárias para a implantação do OVA, clique em *Avançar* e, em seguida, clique em *Concluir* para implantar o OVA do conector VMware HCX.
++
+
+NOTE: Ligue o dispositivo virtual manualmente.
+
+
+
+Para obter instruções passo a passo, consulte o https://docs.vmware.com/en/VMware-HCX/services/user-guide/GUID-BFD7E194-CFE5-4259-B74B-991B26A51758.html["Guia do usuário do VMware HCX"^] .
+
+====
+.Etapa 3: Ative o HCX Connector com a chave de licença
+[%collapsible%open]
+====
+Depois de implantar o VMware HCX Connector OVA no local e iniciar o dispositivo, conclua as seguintes etapas para ativar o HCX Connector.  Gere a chave de licença no portal do Azure VMware Solution e ative-a no VMware HCX Manager.
+
+. No portal do Azure, acesse a Solução VMware do Azure, selecione a nuvem privada e selecione *Gerenciar > Complementos > Migração usando HCX*.
+. Em *Conectar com chaves HCX locais*, clique em *Adicionar* e copie a chave de ativação.
++
+image:anfd-hcx-007.png["Captura de tela para adicionar chaves HCX."]
+
++
+
+NOTE: Uma chave separada é necessária para cada conector HCX local implantado.
+
+. Efetue login no VMware HCX Manager local em `"https://hcxmanagerIP:9443"` usando credenciais de administrador.
++
+
+NOTE: Use a senha definida durante a implantação do OVA.
+
+. No licenciamento, insira a chave copiada do passo 3 e clique em *Ativar*.
++
+
+NOTE: O conector HCX local deve ter acesso à Internet.
+
+. Em *Local do datacenter*, forneça o local mais próximo para instalar o VMware HCX Manager no local.  Clique em *Continuar*.
+. Em *Nome do sistema*, atualize o nome e clique em *Continuar*.
+. Clique em *Sim, Continuar*.
+. Em *Conectar seu vCenter*, forneça o nome de domínio totalmente qualificado (FQDN) ou endereço IP do vCenter Server e as credenciais apropriadas e clique em *Continuar*.
++
+
+NOTE: Use o FQDN para evitar problemas de conectividade mais tarde.
+
+. Em *Configurar SSO/PSC*, forneça o FQDN ou endereço IP do Platform Services Controller e clique em *Continuar*.
++
+
+NOTE: Digite o FQDN ou endereço IP do VMware vCenter Server.
+
+. Verifique se as informações inseridas estão corretas e clique em *Reiniciar*.
+. Após a reinicialização dos serviços, o vCenter Server é exibido em verde na página que aparece.  Tanto o vCenter Server quanto o SSO devem ter os parâmetros de configuração apropriados, que devem ser os mesmos da página anterior.
++
+
+NOTE: Esse processo deve levar aproximadamente de 10 a 20 minutos para que o plug-in seja adicionado ao vCenter Server.
+
++
+image:anfd-hcx-008.png["Captura de tela mostrando o processo concluído."]
+
+
+
+====
+.Etapa 4: emparelhe o VMware HCX Connector local com o Azure VMware Solution HCX Cloud Manager
+[%collapsible%open]
+====
+Depois que o HCX Connector for instalado no local e no Azure VMware Solution, configure o VMware HCX Connector local para a nuvem privada do Azure VMware Solution adicionando o emparelhamento.  Para configurar o pareamento de sites, conclua as seguintes etapas:
+
+. Para criar um par de sites entre o ambiente vCenter local e o Azure VMware Solution SDDC, faça logon no vCenter Server local e acesse o novo plug-in HCX vSphere Web Client.
+
+
+image:anfd-hcx-009.png["Captura de tela do plug-in HCX vSphere Web Client."]
+
+. Em Infraestrutura, clique em *Adicionar um pareamento de sites*.
+
+
+
+NOTE: Insira a URL ou o endereço IP do Azure VMware Solution HCX Cloud Manager e as credenciais da função CloudAdmin para acessar a nuvem privada.
+
+image:anfd-hcx-010.png["URL da captura de tela ou endereço IP e credenciais para a função CloudAdmin."]
+
+. Clique em *Conectar*.
+
+
+
+NOTE: O VMware HCX Connector deve ser capaz de rotear para o IP do HCX Cloud Manager pela porta 443.
+
+. Após a criação do pareamento, o pareamento do site recém-configurado fica disponível no Painel do HCX.
+
+
+image:anfd-hcx-011.png["Captura de tela do processo concluído no painel do HCX."]
+
+====
+.Etapa 5: configurar o perfil de rede, o perfil de computação e a malha de serviço
+[%collapsible%open]
+====
+O dispositivo de serviço VMware HCX Interconnect fornece recursos de replicação e migração baseados em vMotion pela Internet e conexões privadas com o site de destino.  A interconexão fornece criptografia, engenharia de tráfego e mobilidade de VM.  Para criar um dispositivo de serviço de interconexão, conclua as seguintes etapas:
+
+. Em Infraestrutura, selecione *Interconexão > Malha de serviço multisite > Perfis de computação > Criar perfil de computação*.
+
+
+
+NOTE: Os perfis de computação definem os parâmetros de implantação, incluindo os dispositivos que são implantados e quais partes do data center VMware são acessíveis ao serviço HCX.
+
+image:anfd-hcx-012.png["Captura de tela da página de interconexão do cliente vSphere."]
+
+. Após a criação do perfil de computação, crie os perfis de rede selecionando *Multi-Site Service Mesh > Perfis de rede > Criar perfil de rede*.
+
+
+O perfil de rede define um intervalo de endereços IP e redes que são usados pelo HCX para seus dispositivos virtuais.
+
+
+NOTE: Esta etapa requer dois ou mais endereços IP.  Esses endereços IP são atribuídos pela rede de gerenciamento aos dispositivos de interconexão.
+
+image:anfd-hcx-013.png["Captura de tela da adição de endereços IP à página de interconexão do cliente vSphere."]
+
+. Neste momento, os perfis de computação e rede foram criados com sucesso.
+. Crie o Service Mesh selecionando a aba *Service Mesh* dentro da opção *Interconnect* e selecione os sites locais e do Azure SDDC.
+. O Service Mesh especifica um par de perfis de computação e rede locais e remotos.
+
+
+
+NOTE: Como parte desse processo, os dispositivos HCX são implantados e configurados automaticamente nos sites de origem e de destino para criar uma estrutura de transporte segura.
+
+image:anfd-hcx-014.png["Captura de tela da guia Service Mesh na página de interconexão do cliente vSphere."]
+
+. Esta é a etapa final da configuração.  A implantação deve levar cerca de 30 minutos para ser concluída.  Após a configuração da malha de serviço, o ambiente estará pronto com os túneis IPsec criados com sucesso para migrar as VMs de carga de trabalho.
+
+
+image:anfd-hcx-015.png["Captura de tela do processo concluído na página de interconexão do cliente vSphere."]
+
+====
+.Etapa 6: migrar cargas de trabalho
+[%collapsible%open]
+====
+As cargas de trabalho podem ser migradas bidirecionalmente entre SDDCs locais e do Azure usando várias tecnologias de migração do VMware HCX.  As VMs podem ser movidas de e para entidades ativadas pelo VMware HCX usando diversas tecnologias de migração, como migração em massa do HCX, HCX vMotion, migração a frio do HCX, HCX Replication Assisted vMotion (disponível com a edição HCX Enterprise) e HCX OS Assisted Migration (disponível com a edição HCX Enterprise).
+
+Para saber mais sobre os vários mecanismos de migração do HCX, consulte https://learn.microsoft.com/en-us/azure/azure-vmware/architecture-migrate#vmware-hcx-migration-options["Tipos de migração do VMware HCX"^] .
+
+*Migração em massa*
+
+Esta seção detalha o mecanismo de migração em massa.  Durante uma migração em massa, o recurso de migração em massa do HCX usa o vSphere Replication para migrar arquivos de disco enquanto recria a VM na instância do vSphere HCX de destino.
+
+Para iniciar migrações em massa de VMs, conclua as seguintes etapas:
+
+. Acesse a aba *Migrar* em *Serviços > Migração*.
+
+
+image:anfd-hcx-016.png["Captura de tela da seção Migração no cliente vSphere."]
+
+. Em *Conexão de site remoto*, selecione a conexão de site remoto e selecione a origem e o destino.  Neste exemplo, o destino é o ponto de extremidade SDDC HCX do Azure VMware Solution.
+. Clique em *Selecionar VMs para migração*.  Isso fornece uma lista de todas as VMs locais.  Selecione as VMs com base na expressão match:value e clique em *Adicionar*.
+. Na seção *Transferência e posicionamento*, atualize os campos obrigatórios (*Cluster*, *Armazenamento*, *Destino* e *Rede*), incluindo o perfil de migração, e clique em *Validar*.
+
+
+image:anfd-hcx-017.png["Captura de tela da seção Transferência e posicionamento do cliente vSphere."]
+
+. Após a conclusão das verificações de validação, clique em *Ir* para iniciar a migração.
+
+
+image:anfd-hcx-018.png["Captura de tela do início da migração."]
+
+
+NOTE: Durante essa migração, um disco de espaço reservado é criado no armazenamento de dados especificado do Azure NetApp Files dentro do vCenter de destino para permitir a replicação dos dados do disco da VM de origem para os discos de espaço reservado.  O HBR é acionado para uma sincronização completa com o alvo e, após a conclusão da linha de base, uma sincronização incremental é executada com base no ciclo do objetivo do ponto de recuperação (RPO).  Após a conclusão da sincronização completa/incremental, a alternância é acionada automaticamente, a menos que uma programação específica seja definida.
+
+. Após a conclusão da migração, valide-a acessando o SDDC vCenter de destino.
+
+
+image:anfd-hcx-019.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+Para obter informações adicionais e detalhadas sobre várias opções de migração e sobre como migrar cargas de trabalho do local para o Azure VMware Solution usando HCX, consulte https://learn.microsoft.com/en-us/azure/azure-vmware/architecture-migrate["Considerações sobre a migração do VMware HCX"^] .
+
+Para saber mais sobre esse processo, assista ao vídeo a seguir:
+
+.Migração de carga de trabalho usando HCX
+video::255640f5-4dff-438c-8d50-b01200f017d1[panopto]
+Aqui está uma captura de tela da opção HCX vMotion.
+
+image:anfd-hcx-020.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+Para saber mais sobre esse processo, assista ao vídeo a seguir:
+
+.HCX vMotion
+video::986bb505-6f3d-4a5a-b016-b01200f03f18[panopto]
+
+NOTE: Certifique-se de que haja largura de banda suficiente disponível para lidar com a migração.
+
+
+NOTE: O armazenamento de dados ANF de destino deve ter espaço suficiente para lidar com a migração.
+
+====
+
+
+== Conclusão
+
+Não importa se você tem como alvo a nuvem híbrida ou totalmente em nuvem e dados residindo em qualquer tipo/fornecedor de armazenamento no local, o Azure NetApp Files e o HCX oferecem excelentes opções para implantar e migrar as cargas de trabalho do aplicativo, ao mesmo tempo em que reduzem o TCO ao tornar os requisitos de dados integrados à camada do aplicativo.  Seja qual for o caso de uso, escolha o Azure VMware Solution juntamente com o Azure NetApp Files para rápida concretização dos benefícios da nuvem, infraestrutura consistente e operações em nuvens locais e múltiplas, portabilidade bidirecional de cargas de trabalho e capacidade e desempenho de nível empresarial.  É o mesmo processo e procedimento familiar usado para conectar o armazenamento e migrar VMs usando VMware vSphere Replication, VMware vMotion ou até mesmo cópia de arquivo de rede (NFC).
+
+
+
+== Takeaways
+
+Os pontos principais deste documento incluem:
+
+* Agora você pode usar o Azure NetApp Files como um armazenamento de dados no Azure VMware Solution SDDC.
+* Você pode migrar facilmente dados do local para o armazenamento de dados do Azure NetApp Files .
+* Você pode facilmente aumentar e diminuir o armazenamento de dados do Azure NetApp Files para atender aos requisitos de capacidade e desempenho durante a atividade de migração.
+
+
+
+
+== Onde encontrar informações adicionais
+
+Para saber mais sobre as informações descritas neste documento, consulte os seguintes links do site:
+
+* Documentação da solução Azure VMware
+
+
+https://docs.microsoft.com/en-us/azure/azure-vmware/["https://docs.microsoft.com/en-us/azure/azure-vmware/"^]
+
+* Documentação do Azure NetApp Files
+
+
+https://docs.microsoft.com/en-us/azure/azure-netapp-files/["https://docs.microsoft.com/en-us/azure/azure-netapp-files/"^]
+
+* Considerações sobre a migração do VMware HCX
+
+
+https://learn.microsoft.com/en-us/azure/azure-vmware/architecture-migrate["https://learn.microsoft.com/en-us/azure/azure-vmware/architecture-migrate"^]

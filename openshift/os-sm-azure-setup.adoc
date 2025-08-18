@@ -1,0 +1,117 @@
+---
+sidebar: sidebar 
+permalink: openshift/os-sm-azure-setup.html 
+keywords: NetApp Solutions, redhat OpenShift, red hat OpenShift, redhat openshift container platform, ocp, openshift container platform, Advanced Cluster Management, ACM, Hub Cluster, containers, container workloads, VMware, customer managed storage, ONTAP, Azure, Azure Cloud. 
+summary:  
+---
+= Implantar e configurar a plataforma Red Hat OpenShift Container no Azure
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Esta seção descreve um fluxo de trabalho de alto nível sobre como configurar e gerenciar clusters OpenShift no Azure e implantar aplicativos com estado neles.  Ele mostra o uso do armazenamento NetApp Cloud Volumes ONTAP com a ajuda do Trident para fornecer volumes persistentes.  São fornecidos detalhes sobre o uso do Trident Protect para executar atividades de proteção e migração de dados para aplicativos com estado.
+
+Aqui está um diagrama que mostra os clusters implantados no Azure e conectados ao data center usando uma VPN.
+
+image:rhhc-self-managed-azure.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+
+NOTE: Há várias maneiras de implantar clusters da plataforma Red Hat OpenShift Container no Azure.  Esta descrição de alto nível da configuração fornece links de documentação para o método específico que foi usado.  Você pode consultar os outros métodos nos links relevantes fornecidos nolink:os-solutions-resources.html["seção de recursos"] .
+
+O processo de configuração pode ser dividido nas seguintes etapas:
+
+.Instale um cluster OCP no Azure a partir da CLI.
+[%collapsible%open]
+====
+* Certifique-se de que você atendeu a todos os pré-requisitos declaradoslink:https://docs.openshift.com/container-platform/4.13/installing/installing_azure/installing-azure-vnet.html["aqui"] .
+* Crie uma VPN, sub-redes e grupos de segurança de rede e uma zona DNS privada.  Crie um gateway VPN e uma conexão VPN site a site.
+* Para a conectividade VPN entre o ambiente local e o Azure, uma VM pfsense foi criada e configurada.  Para obter instruções, consultelink:https://docs.netgate.com/pfsense/en/latest/recipes/ipsec-s2s-psk.html["aqui"] .
+* Obtenha o programa de instalação e o segredo de pull e implante o cluster seguindo as etapas fornecidas na documentaçãolink:https://docs.openshift.com/container-platform/4.13/installing/installing_azure/installing-azure-vnet.html["aqui"] .
+* A instalação do cluster será concluída e fornecerá um arquivo kubeconfig, nome de usuário e senha para efetuar login no console do cluster.
+
+
+Um exemplo de arquivo install-config.yaml é fornecido abaixo.
+
+....
+apiVersion: v1
+baseDomain: sddc.netapp.com
+compute:
+- architecture: amd64
+  hyperthreading: Enabled
+  name: worker
+  platform:
+    azure:
+      encryptionAtHost: false
+      osDisk:
+        diskSizeGB: 512
+        diskType: "StandardSSD_LRS"
+      type: Standard_D2s_v3
+      ultraSSDCapability: Disabled
+      #zones:
+      #- "1"
+      #- "2"
+      #- "3"
+  replicas: 3
+controlPlane:
+  architecture: amd64
+  hyperthreading: Enabled
+  name: master
+  platform:
+    azure:
+      encryptionAtHost: false
+      osDisk:
+        diskSizeGB: 1024
+        diskType: Premium_LRS
+      type: Standard_D8s_v3
+      ultraSSDCapability: Disabled
+  replicas: 3
+metadata:
+  creationTimestamp: null
+  name: azure-cluster
+networking:
+  clusterNetwork:
+  - cidr: 10.128.0.0/14
+    hostPrefix: 23
+  machineNetwork:
+  - cidr: 10.0.0.0/16
+  networkType: OVNKubernetes
+  serviceNetwork:
+  - 172.30.0.0/16
+platform:
+  azure:
+    baseDomainResourceGroupName: ocp-base-domain-rg
+    cloudName: AzurePublicCloud
+    computeSubnet: ocp-subnet2
+    controlPlaneSubnet: ocp-subnet1
+    defaultMachinePlatform:
+      osDisk:
+        diskSizeGB: 1024
+        diskType: "StandardSSD_LRS"
+      ultraSSDCapability: Disabled
+    networkResourceGroupName: ocp-nc-us-rg
+    #outboundType: UserDefinedRouting
+    region: northcentralus
+    resourceGroupName: ocp-cluster-ncusrg
+    virtualNetwork: ocp_vnet_ncus
+publish: Internal
+pullSecret:
+....
+====
+.Implante o Cloud Volumes ONTAP no Azure usando o BlueXP.
+[%collapsible%open]
+====
+* Instale um conector no Azure.  Consulte as instruções https://docs.netapp.com/us-en/bluexp-setup-admin/task-install-connector-azure-bluexp.html["aqui"] .
+* Implante uma instância CVO no Azure usando o conector.  Consulte o link de instruções: https://docs.netapp.com/us-en/bluexp-cloud-volumes-ontap/task-getting-started-azure.html [aqui.]
+
+
+====
+.Usando o recurso de topologia CSI do Trident para arquiteturas multizona
+Os provedores de nuvem, hoje, permitem que os administradores de cluster do Kubernetes/OpenShift gerem nós dos clusters baseados em zonas.  Os nós podem estar localizados em diferentes zonas de disponibilidade dentro de uma região ou em várias regiões.  Para facilitar o provisionamento de volumes para cargas de trabalho em uma arquitetura multizona, o Trident usa a topologia CSI.  Usando o recurso Topologia CSI, o acesso aos volumes pode ser limitado a um subconjunto de nós, com base em regiões e zonas de disponibilidade.  Referirlink:https://docs.netapp.com/us-en/trident/trident-use/csi-topology.html["aqui"] para obter detalhes adicionais.
+
+
+NOTE: O Kubernetes oferece suporte a dois modos de vinculação de volume: - Quando **_VolumeBindingMode_ é definido como _Immediate_** (padrão), o Trident cria o volume sem qualquer reconhecimento de topologia.  Volumes persistentes são criados sem qualquer dependência dos requisitos de agendamento do pod solicitante.  - Quando **_VolumeBindingMode_ definido como _WaitForFirstConsumer_**, a criação e a vinculação de um Volume Persistente para um PVC são atrasadas até que um pod que usa o PVC seja agendado e criado.  Dessa forma, os volumes são criados para atender às restrições de agendamento impostas pelos requisitos de topologia.  Os backends de armazenamento Trident podem ser projetados para provisionar volumes seletivamente com base em zonas de disponibilidade (backend com reconhecimento de topologia).  Para StorageClasses que fazem uso desse backend, um volume só seria criado se solicitado por um aplicativo agendado em uma região/zona suportada.  (Classe de armazenamento com reconhecimento de topologia) Consultelink:https://docs.netapp.com/us-en/trident/trident-use/csi-topology.html["aqui"] para obter detalhes adicionais.

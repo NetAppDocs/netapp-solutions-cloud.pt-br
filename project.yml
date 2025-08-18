@@ -1,0 +1,39 @@
+---
+settings:
+  name: NetApp public and hybrid cloud solutions
+  internal:
+    pdf_enabled: true
+    lipi_enabled: true
+  prod:
+    pdf_enabled: true
+    harmony_enabled: false
+    lipi_enabled: true
+  pdf:
+    gen-type: named-only
+    zip-level: 1
+    zip-filename: netapp-solutions-cloud.zip
+  langs: pt-br,us-en,de-de,es-es,fr-fr,it-it,ja-jp,ko-kr,zh-cn,zh-tw
+sidebar:
+  entries:
+  - title: Soluções de nuvem pública e híbrida
+    url: "/index.html"
+  - title: O que há de novo
+    url: "/whats-new.html"
+  - section: ehc
+  - section: rhhc
+  - title: Vídeos
+    url: "/videos/index.html"
+    entries:
+    - title: Nuvem híbrida AWS
+      url: "/videos/hmc-aws-videos.html"
+    - title: Nuvem híbrida do Azure
+      url: "/videos/hmc-azure-videos.html"
+    - title: Nuvem híbrida OpenShift
+      url: "/videos/hmc-openshift-videos.html"
+  - title: Blogs
+    url: "/blogs.html"
+  - title: Avisos legais
+    url: "/legal-notices.html"
+product-family:
+  name: NetApp solutions
+  repo: netapp-solutions-family

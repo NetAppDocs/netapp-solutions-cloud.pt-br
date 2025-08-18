@@ -1,0 +1,106 @@
+---
+sidebar: sidebar 
+permalink: openshift/os-solutions-validated.html 
+keywords: NetApp Solutions, hybrid cloud, container workloads, containers, Red Hat OpenShift, RedHat OpenShift, VMware, ROSA, ACC, Trident Protect, Advanced Cluster Management, ACM, Hub Cluster 
+summary:  
+---
+= Soluções suportadas do NetApp Hybrid Multicloud para cargas de trabalho do Red Hat OpenShift Container
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+A solução testa e valida a migração e a proteção centralizada de dados com a plataforma de contêiner OpenShift (OCP), OpenShift Advanced Cluster Manager (ACM), NetApp ONTAP, NetApp BlueXP e NetApp Trident Protect (ACC).
+
+Para esta solução, os seguintes cenários são testados e validados pela NetApp.  A solução é separada em vários cenários com base nas seguintes características:
+
+* no local
+* nuvem
++
+** clusters OpenShift autogerenciados e armazenamento NetApp autogerenciado
+** clusters OpenShift gerenciados pelo provedor e armazenamento NetApp gerenciado pelo provedor
+
+
+
+
+**Desenvolveremos soluções e casos de uso adicionais no futuro.**
+
+
+
+== Cenário 1: Proteção de dados e migração no ambiente local usando o Trident Protect
+
+**No local: clusters OpenShift autogerenciados e armazenamento NetApp autogerenciado**
+
+* Usando o ACC, crie cópias de instantâneos, backups e restaurações para proteção de dados.
+* Usando o ACC, execute uma replicação SnapMirror de aplicativos de contêiner.
+
+
+
+
+=== Cenário 1
+
+image:rhhc-on-premises.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+
+
+== Cenário 2: Proteção de dados e migração do ambiente local para o ambiente AWS usando o Trident Protect
+
+**No local: cluster OpenShift autogerenciado e armazenamento autogerenciado** **Nuvem AWS: cluster OpenShift autogerenciado e armazenamento autogerenciado**
+
+* Usando o ACC, faça backups e restaurações para proteção de dados.
+* Usando o ACC, execute uma replicação SnapMirror de aplicativos de contêiner.
+
+
+
+
+=== Cenário 2
+
+image:rhhc-self-managed-aws.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+
+
+== Cenário 3: Proteção de dados e migração do ambiente local para o ambiente AWS
+
+**No local: cluster OpenShift autogerenciado e armazenamento autogerenciado** **Nuvem AWS: cluster OpenShift gerenciado pelo provedor (ROSA) e armazenamento gerenciado pelo provedor (FSx ONTAP)**
+
+* Usando o BlueXP, execute a replicação de volumes persistentes (FSx ONTAP).
+* Usando o OpenShift GitOps, recrie metadados do aplicativo.
+
+
+
+
+=== Cenário 3
+
+image:rhhc-rosa-with-fsxn.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+
+
+=== Cenário 4: Proteção de dados e migração do ambiente local para o ambiente GCP usando o Trident Protect
+
+**No local: cluster OpenShift autogerenciado e armazenamento autogerenciado** **Google Cloud: cluster OpenShift autogerenciado e armazenamento autogerenciado**
+
+* Usando o ACC, faça backups e restaurações para proteção de dados.
+* Usando o ACC, execute uma replicação SnapMirror de aplicativos de contêiner.
+
+
+image:rhhc-self-managed-gcp.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+Para considerações ao usar o ONTAP em uma configuração MetroCluster , consultelink:https://docs.netapp.com/us-en/ontap-metrocluster/install-stretch/concept_considerations_when_using_ontap_in_a_mcc_configuration.html["aqui"] .
+
+
+
+=== Cenário 5: Proteção de dados e migração do ambiente local para o ambiente do Azure usando o Trident Protect
+
+**No local: cluster OpenShift autogerenciado e armazenamento autogerenciado** **Azure Cloud: cluster OpenShift autogerenciado e armazenamento autogerenciado**
+
+* Usando o ACC, faça backups e restaurações para proteção de dados.
+* Usando o ACC, execute uma replicação SnapMirror de aplicativos de contêiner.
+
+
+image:rhhc-self-managed-azure.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+Para considerações ao usar o ONTAP em uma configuração MetroCluster , consultelink:https://docs.netapp.com/us-en/ontap-metrocluster/install-stretch/concept_considerations_when_using_ontap_in_a_mcc_configuration.html["aqui"] .

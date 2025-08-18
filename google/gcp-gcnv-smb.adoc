@@ -1,0 +1,338 @@
+---
+sidebar: sidebar 
+permalink: google/gcp-gcnv-smb.html 
+keywords: smb, access control, name aliases, authentication dialects, NTFS, mmc, 
+summary: SMB é um protocolo de compartilhamento de arquivos de rede desenvolvido pela Microsoft que fornece autenticação centralizada de usuários/grupos, permissões, bloqueio e compartilhamento de arquivos para vários clientes SMB por meio de uma rede Ethernet. 
+---
+= PMEs
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/hh831795(v=ws.11)["PMEs"^]é um protocolo de compartilhamento de arquivos de rede desenvolvido pela Microsoft que fornece autenticação centralizada de usuários/grupos, permissões, bloqueio e compartilhamento de arquivos para vários clientes SMB por meio de uma rede Ethernet.  Arquivos e pastas são apresentados aos clientes por meio de compartilhamentos, que podem ser configurados com uma variedade de propriedades de compartilhamento e oferecem controle de acesso por meio de permissões em nível de compartilhamento.  O SMB pode ser apresentado a qualquer cliente que ofereça suporte ao protocolo, incluindo clientes Windows, Apple e Linux.
+
+O Google Cloud NetApp Volumes oferece suporte para as versões SMB 2.1 e 3.x do protocolo.
+
+
+
+== Controle de acesso/compartilhamentos SMB
+
+* Quando um nome de usuário do Windows solicita acesso ao volume do Google Cloud NetApp Volumes , o Google Cloud NetApp Volumes procura um nome de usuário do UNIX usando os métodos configurados pelos administradores do Google Cloud NetApp Volumes .
+* Se um provedor de identidade UNIX externo (LDAP) estiver configurado e os nomes de usuário do Windows/UNIX forem idênticos, os nomes de usuário do Windows serão mapeados 1:1 para os nomes de usuário do UNIX sem necessidade de nenhuma configuração adicional.  Quando o LDAP está habilitado, o Active Directory é usado para hospedar esses atributos UNIX para objetos de usuário e grupo.
+* Se os nomes do Windows e os nomes do UNIX não corresponderem de forma idêntica, o LDAP deverá ser configurado para permitir que o Google Cloud NetApp Volumes use a configuração de mapeamento de nomes LDAP (consulte a seçãolink:gcp-gcnv-nas-dependencies.html#using-ldap-for-asymmetric-name-mapping["Usando LDAP para mapeamento de nomes assimétricos"] ).
+* Se o LDAP não estiver em uso, os usuários do Windows SMB serão mapeados para um usuário UNIX local padrão chamado `pcuser` no Google Cloud NetApp Volumes.  Isso significa arquivos escritos no Windows por usuários que mapeiam para o `pcuser` mostrar a propriedade do UNIX como `pcuser` em ambientes NAS multiprotocolo. `pcuser` aqui está efetivamente o `nobody` usuário em ambientes Linux (UID 65534).
+
+
+Em implantações somente com SMB, o `pcuser` O mapeamento ainda ocorre, mas não importa, porque a propriedade de usuários e grupos do Windows é exibida corretamente e o acesso NFS ao volume somente SMB não é permitido.  Além disso, os volumes somente SMB não oferecem suporte à conversão para volumes NFS ou de protocolo duplo após serem criados.
+
+O Windows utiliza o Kerberos para autenticação de nome de usuário com os controladores de domínio do Active Directory, o que requer uma troca de nome de usuário/senha com os DCs do AD, que é externo à instância do Google Cloud NetApp Volumes .  A autenticação Kerberos é usada quando o `\\SERVERNAME` O caminho UNC é usado pelos clientes SMB e o seguinte é verdadeiro:
+
+* Existe uma entrada DNS A/AAAA para SERVERNAME
+* Existe um SPN válido para acesso SMB/CIFS para SERVERNAME
+
+
+Quando um volume SMB do Google Cloud NetApp Volumes é criado, o nome da conta da máquina é criado conforme definido na seçãolink:gcp-gcnv-ad-connections.html#how-cloud-volumes-service-shows-up-in-active-directory["Como o Google Cloud NetApp Volumes aparece no Active Directory."] O nome da conta da máquina também se torna o caminho de acesso do compartilhamento SMB porque o Google Cloud NetApp Volumes utiliza o DNS dinâmico (DDNS) para criar as entradas A/AAAA e PTR necessárias no DNS e as entradas SPN necessárias na entidade de conta da máquina.
+
+
+NOTE: Para que entradas PTR sejam criadas, a zona de pesquisa reversa para o endereço IP da instância do Google Cloud NetApp Volumes deve existir no servidor DNS.
+
+Por exemplo, este volume do Google Cloud NetApp Volumes usa o seguinte caminho de compartilhamento UNC: `\\cvs-east- 433d.cvsdemo.local` .
+
+No Active Directory, estas são as entradas SPN geradas Google Cloud NetApp Volumes:
+
+image:ncvs-gc-006.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+Este é o resultado da pesquisa direta/reversa de DNS:
+
+....
+PS C:\> nslookup NetApp Volumes-EAST-433D
+Server:  activedirectory. region. lab. internal
+Address:  10. xx.0. xx
+Name:    NetApp Volumes-EAST-433D.cvsdemo.local
+Address:  10. xxx.0. x
+PS C:\> nslookup 10. xxx.0. x
+Server:  activedirectory.region.lab.internal
+Address:  10.xx.0.xx
+Name:    NetApp Volumes-EAST-433D.CVSDEMO.LOCAL
+Address:  10. xxx.0. x
+....
+Opcionalmente, mais controle de acesso pode ser aplicado habilitando/exigindo criptografia SMB para compartilhamentos SMB no Google Cloud NetApp Volumes.  Se a criptografia SMB não for suportada por um dos endpoints, o acesso não será permitido.
+
+
+
+=== Usando aliases de nomes SMB
+
+Em alguns casos, pode ser uma preocupação de segurança para os usuários finais saberem o nome da conta da máquina em uso para o Google Cloud NetApp Volumes.  Em outros casos, você pode simplesmente querer fornecer um caminho de acesso mais simples aos seus usuários finais.  Nesses casos, você pode criar aliases SMB.
+
+Se quiser criar aliases para o caminho de compartilhamento SMB, você pode aproveitar o que é conhecido como registro CNAME no DNS.  Por exemplo, se você quiser usar o nome `\\CIFS` para acessar ações em vez de `\\cvs-east- 433d.cvsdemo.local` , mas você ainda deseja usar a autenticação Kerberos, um CNAME no DNS que aponta para o registro A/AAAA existente e um SPN adicional adicionado à conta da máquina existente fornece acesso Kerberos.
+
+image:ncvs-gc-007.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+Este é o resultado da pesquisa direta de DNS após adicionar um CNAME:
+
+....
+PS C:\> nslookup cifs
+Server:  ok-activedirectory.us-east4-a.c.cv-solution-architect-lab.internal
+Address:  10. xx.0. xx
+Name:    NetApp Volumes-EAST-433D.cvsdemo.local
+Address:  10. xxx.0. x
+Aliases:  cifs.cvsdemo.local
+....
+Esta é a consulta SPN resultante após adicionar novos SPNs:
+
+image:ncvs-gc-008.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+Em uma captura de pacotes, podemos ver a solicitação de configuração de sessão usando o SPN vinculado ao CNAME.
+
+image:ncvs-gc-009.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+
+
+=== Dialetos de autenticação SMB
+
+O Google Cloud NetApp Volumes oferece suporte ao seguinte https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-smb2/8df1a501-ce4e-4287-8848-5f1d4733e280["dialetos"^] para autenticação SMB:
+
+* LM
+* NTLM
+* NTLMv2
+* Kerberos
+
+
+A autenticação Kerberos para acesso ao compartilhamento SMB é o nível de autenticação mais seguro que você pode usar.  Com a criptografia AES e SMB habilitada, o nível de segurança aumenta ainda mais.
+
+O Google Cloud NetApp Volumes também oferece suporte à compatibilidade com versões anteriores para autenticação LM e NTLM.  Quando o Kerberos está configurado incorretamente (como ao criar aliases SMB), o acesso compartilhado recorre a métodos de autenticação mais fracos (como NTLMv2).  Como esses mecanismos são menos seguros, eles são desabilitados em alguns ambientes do Active Directory.  Se métodos de autenticação mais fracos estiverem desabilitados e o Kerberos não estiver configurado corretamente, o acesso compartilhado falhará porque não há um método de autenticação válido para recorrer.
+
+Para obter informações sobre como configurar/visualizar seus níveis de autenticação suportados no Active Directory, consulte https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/network-security-lan-manager-authentication-level["Segurança de rede: nível de autenticação do LAN Manager"^] .
+
+
+
+== Modelos de permissão
+
+
+
+=== Permissões de NTFS/Arquivo
+
+Permissões NTFS são as permissões aplicadas a arquivos e pastas em sistemas de arquivos que aderem à lógica NTFS.  Você pode aplicar permissões NTFS em `Basic` ou `Advanced` e pode ser configurado para `Allow` ou `Deny` para controle de acesso.
+
+As permissões básicas incluem o seguinte:
+
+* Controle total
+* Modificar
+* Ler e Executar
+* Ler
+* Escrever
+
+
+Quando você define permissões para um usuário ou grupo, conhecido como ACE, ele reside em uma ACL.  As permissões NTFS usam os mesmos princípios básicos de leitura/gravação/execução dos bits do modo UNIX, mas também podem se estender a controles de acesso mais granulares e estendidos (também conhecidos como Permissões Especiais), como Assumir Propriedade, Criar Pastas/Acrescentar Dados, Gravar Atributos e muito mais.
+
+Os bits do modo UNIX padrão não fornecem o mesmo nível de granularidade que as permissões NTFS (como poder definir permissões para objetos de usuários e grupos individuais em uma ACL ou definir atributos estendidos).  No entanto, as ACLs do NFSv4.1 fornecem a mesma funcionalidade que as ACLs do NTFS.
+
+As permissões NTFS são mais específicas do que as permissões de compartilhamento e podem ser usadas em conjunto com as permissões de compartilhamento.  Com estruturas de permissão NTFS, a mais restritiva se aplica.  Dessa forma, negações explícitas a um usuário ou grupo substituem até mesmo o Controle Total ao definir direitos de acesso.
+
+As permissões NTFS são controladas por clientes SMB do Windows.
+
+
+
+=== Permissões de compartilhamento
+
+As permissões de compartilhamento são mais gerais do que as permissões NTFS (somente Leitura/Alteração/Controle Total) e controlam a entrada inicial em um compartilhamento SMB, semelhante ao funcionamento das regras de política de exportação NFS.
+
+Embora as regras de política de exportação do NFS controlem o acesso por meio de informações baseadas em host, como endereços IP ou nomes de host, as permissões de compartilhamento SMB podem controlar o acesso usando ACEs de usuário e grupo em uma ACL de compartilhamento.  Você pode definir ACLs de compartilhamento no cliente Windows ou na interface de gerenciamento do Google Cloud NetApp Volumes .
+
+Por padrão, as ACLs de compartilhamento e as ACLs de volume inicial incluem Todos com Controle Total.  As ACLs do arquivo devem ser alteradas, mas as permissões de compartilhamento são substituídas pelas permissões de arquivo em objetos no compartilhamento.
+
+Por exemplo, se um usuário tiver permissão somente para acesso de Leitura à ACL do arquivo de volume do Google Cloud NetApp Volumes , ele terá o acesso negado para criar arquivos e pastas, mesmo que a ACL de compartilhamento esteja definida como Todos com Controle Total, conforme mostrado na figura a seguir.
+
+image:ncvs-gc-010.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+image:ncvs-gc-011.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+Para melhores resultados de segurança, faça o seguinte:
+
+* Remova Todos das ACLs de compartilhamento e arquivo e, em vez disso, defina o acesso de compartilhamento para usuários ou grupos.
+* Use grupos para controle de acesso em vez de usuários individuais para facilitar o gerenciamento e remover/adicionar usuários mais rapidamente para compartilhar ACLs por meio do gerenciamento de grupos.
+* Permita acesso de compartilhamento menos restritivo e mais geral aos ACEs nas permissões de compartilhamento e bloqueie o acesso a usuários e grupos com permissões de arquivo para um controle de acesso mais granular.
+* Evite o uso geral de ACLs de negação explícitas, porque elas substituem ACLs de permissão.  Limite o uso de ACLs de negação explícita para usuários ou grupos que precisam ter o acesso a um sistema de arquivos restringido rapidamente.
+* Certifique-se de prestar atenção ao https://www.varonis.com/blog/permission-propagation/["Herança ACL"^] configurações ao modificar permissões; definir o sinalizador de herança no nível superior de um diretório ou volume com altas contagens de arquivos significa que cada arquivo abaixo desse diretório ou volume herdou permissões adicionadas a ele, o que pode criar comportamento indesejado, como acesso/negação não intencional e longa rotatividade de modificação de permissão à medida que cada arquivo é ajustado.
+
+
+
+
+== Recursos de segurança de compartilhamento de PMEs
+
+Ao criar um volume com acesso SMB pela primeira vez no Google Cloud NetApp Volumes, você verá uma série de opções para proteger esse volume.
+
+Algumas dessas opções dependem do nível do Google Cloud NetApp Volumes (desempenho ou software) e as opções incluem:
+
+* *Tornar o diretório de snapshot visível (disponível para NetApp Volumes-Performance e NetApp Volumes-SW).*  Esta opção controla se os clientes SMB podem ou não acessar o diretório Snapshot em um compartilhamento SMB(`\\server\share\~snapshot` e/ou guia Versões Anteriores).  A configuração padrão é Não Verificado, o que significa que o volume é ocultado por padrão e não permite o acesso ao `~snapshot` diretório e nenhuma cópia do Snapshot aparece na guia Versões anteriores do volume.
+
+
+image:ncvs-gc-012.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+Ocultar cópias de Snapshot dos usuários finais pode ser desejado por motivos de segurança, desempenho (ocultar essas pastas de verificações de antivírus) ou preferência.  Os Snapshots do Google Cloud NetApp Volumes são somente leitura, portanto, mesmo que estejam visíveis, os usuários finais não podem excluir ou modificar arquivos no diretório Snapshot.  As permissões de arquivo nos arquivos ou pastas no momento em que a cópia do Snapshot foi feita se aplicam.  Se as permissões de um arquivo ou pasta forem alteradas entre cópias do Snapshot, as alterações também se aplicarão aos arquivos ou pastas no diretório do Snapshot.  Usuários e grupos podem obter acesso a esses arquivos ou pastas com base em permissões.  Embora não seja possível excluir ou modificar arquivos no diretório Snapshot, é possível copiar arquivos ou pastas do diretório Snapshot.
+
+* *Habilite a criptografia SMB (disponível para NetApp Volumes-Performance e NetApp Volumes-SW).*  A criptografia SMB é desabilitada no compartilhamento SMB por padrão (desmarcada).  Marcar a caixa ativa a criptografia SMB, o que significa que o tráfego entre o cliente e o servidor SMB é criptografado em trânsito com os mais altos níveis de criptografia suportados negociados.  O Google Cloud NetApp Volumes oferece suporte à criptografia de até AES-256 para PMEs.  Habilitar a criptografia SMB acarreta uma perda de desempenho que pode ou não ser perceptível para seus clientes SMB, em torno de 10-20%.  A NetApp recomenda fortemente testes para verificar se essa perda de desempenho é aceitável.
+* *Ocultar compartilhamento SMB (disponível para NetApp Volumes-Performance e NetApp Volumes-SW).*  Definir esta opção oculta o caminho do compartilhamento SMB da navegação normal.  Isso significa que os clientes que não conhecem o caminho do compartilhamento não podem ver os compartilhamentos ao acessar o caminho UNC padrão (como `\\NetApp Volumes-SMB` ).  Quando a caixa de seleção é marcada, somente clientes que conhecem explicitamente o caminho do compartilhamento SMB ou têm o caminho do compartilhamento definido por um Objeto de Política de Grupo podem acessá-lo (segurança por ofuscação).
+* *Habilite a enumeração baseada em acesso (ABE) (somente NetApp Volumes-SW).*  Isso é semelhante a ocultar o compartilhamento SMB, exceto que os compartilhamentos ou arquivos são ocultados somente de usuários ou grupos que não têm permissões para acessar os objetos.  Por exemplo, se o usuário do Windows `joe` não é permitido pelo menos acesso de leitura através das permissões, então o usuário do Windows `joe` não é possível ver o compartilhamento SMB ou os arquivos.  Isso é desabilitado por padrão, mas você pode habilitá-lo marcando a caixa de seleção.  Para obter mais informações sobre o ABE, consulte o artigo da Base de conhecimento da NetApp https://kb.netapp.com/Advice_and_Troubleshooting/Data_Storage_Software/ONTAP_OS/How_does_Access_Based_Enumeration_(ABE)_work["Como funciona a Enumeração Baseada em Acesso (ABE)?"^]
+* *Habilite o suporte de compartilhamento continuamente disponível (CA) (somente NetApp Volumes-Performance).* https://kb.netapp.com/Advice_and_Troubleshooting/Data_Storage_Software/ONTAP_OS/What_are_SMB_Continuously_Available_(CA)_Shares["Ações SMB continuamente disponíveis"^] fornece uma maneira de minimizar interrupções de aplicativos durante eventos de failover replicando estados de bloqueio entre nós no sistema de back-end do Google Cloud NetApp Volumes .  Este não é um recurso de segurança, mas oferece melhor resiliência geral.  Atualmente, apenas aplicativos SQL Server e FSLogix são suportados para essa funcionalidade.
+
+
+
+
+== Compartilhamentos ocultos padrão
+
+Quando um servidor SMB é criado no Google Cloud NetApp Volumes, há https://library.netapp.com/ecmdocs/ECMP1366834/html/GUID-5B56B12D-219C-4E23-B3F8-1CB1C4F619CE.html["compartilhamentos administrativos ocultos"^] (usando a convenção de nomenclatura $) que são criados além do compartilhamento SMB do volume de dados.  Isso inclui C$ (acesso ao namespace) e IPC$ (compartilhamento de pipes nomeados para comunicação entre programas, como chamadas de procedimento remoto (RPC) usadas para acesso ao Microsoft Management Console (MMC)).
+
+O compartilhamento IPC$ não contém ACLs de compartilhamento e não pode ser modificado - é usado estritamente para chamadas RPC e https://docs.microsoft.com/en-us/troubleshoot/windows-server/networking/inter-process-communication-share-null-session["O Windows não permite acesso anônimo a esses compartilhamentos por padrão"^] .
+
+O compartilhamento C$ permite acesso de BUILTIN/Administradores por padrão, mas a automação do Google Cloud NetApp Volumes remove a ACL do compartilhamento e não permite acesso a ninguém porque o acesso ao compartilhamento C$ permite visibilidade de todos os volumes montados nos sistemas de arquivos do Google Cloud NetApp Volumes .  Como resultado, as tentativas de navegar para `\\SERVER\C$` falhar.
+
+
+
+== Contas com direitos de administrador/backup locais/INCLUÍDOS
+
+Os servidores SMB do Google Cloud NetApp Volumes mantêm funcionalidade semelhante aos servidores SMB comuns do Windows, pois há grupos locais (como BUILTIN\Administradores) que aplicam direitos de acesso para selecionar usuários e grupos de domínio.
+
+Quando você especifica um usuário a ser adicionado aos Usuários de backup, o usuário é adicionado ao grupo BUILTIN\Operadores de backup na instância do Google Cloud NetApp Volumes que usa essa conexão do Active Directory, que então obtém o https://docs.microsoft.com/en-us/windows-hardware/drivers/ifs/privileges["SeBackupPrivilege e SeRestorePrivilege"^] .
+
+Quando você adiciona um usuário aos Usuários com Privilégio de Segurança, o usuário recebe o SeSecurityPrivilege, que é útil em alguns casos de uso de aplicativos, como https://docs.netapp.com/us-en/ontap/smb-hyper-v-sql/add-sesecurityprivilege-user-account-task.html["SQL Server em compartilhamentos SMB"^] .
+
+image:ncvs-gc-013.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+Você pode visualizar as associações de grupos locais do Google Cloud NetApp Volumes por meio do MMC com os privilégios adequados.  A figura a seguir mostra os usuários que foram adicionados usando o console do Google Cloud NetApp Volumes .
+
+image:ncvs-gc-014.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+A tabela a seguir mostra a lista de grupos BUILTIN padrão e quais usuários/grupos são adicionados por padrão.
+
+|===
+| Grupo local/BUILTIN | Membros padrão 
+
+
+| BUILTIN\Administradores* | DOMÍNIO\Administradores de Domínio 
+
+
+| BUILTIN\Operadores de backup* | Nenhum 
+
+
+| CONSTRUÇÃO\Convidados | DOMÍNIO\Convidados do Domínio 
+
+
+| BUILTIN\Usuários avançados | Nenhum 
+
+
+| BUILTIN\Usuários do Domínio | DOMÍNIO\Usuários do Domínio 
+|===
+*Associação de grupo controlada na configuração de conexão do Google Cloud NetApp Volumes Active Directory.
+
+Você pode visualizar usuários e grupos locais (e membros do grupo) na janela do MMC, mas não pode adicionar ou excluir objetos ou alterar associações de grupo neste console.  Por padrão, somente o grupo Administradores de domínio e Administrador são adicionados ao grupo BUILTIN\Administradores no Google Cloud NetApp Volumes.  Atualmente, você não pode modificar isso.
+
+image:ncvs-gc-015.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+image:ncvs-gc-016.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+
+
+== Acesso MMC/Gerenciamento de Computador
+
+O acesso SMB no Google Cloud NetApp Volumes fornece conectividade ao MMC de gerenciamento do computador, o que permite que você visualize compartilhamentos, gerencie ACLs de compartilhamento, bem como visualize/gerencie sessões SMB e abra arquivos.
+
+Para usar o MMC para visualizar compartilhamentos e sessões SMB no Google Cloud NetApp Volumes, o usuário conectado no momento deve ser um administrador de domínio.  Outros usuários têm permissão para visualizar ou gerenciar o servidor SMB do MMC e recebem uma caixa de diálogo Você não tem permissões ao tentar visualizar compartilhamentos ou sessões na instância SMB do Google Cloud NetApp Volumes .
+
+Para se conectar ao servidor SMB, abra o Gerenciamento do Computador, clique com o botão direito do mouse em Gerenciamento do Computador e selecione Conectar a Outro Computador.  Isso abre a caixa de diálogo Selecionar computador, onde você pode inserir o nome do servidor SMB (encontrado nas informações de volume do Google Cloud NetApp Volumes ).
+
+Ao visualizar compartilhamentos SMB com as permissões adequadas, você verá todos os compartilhamentos disponíveis na instância do Google Cloud NetApp Volumes que compartilham a conexão do Active Directory.  Para controlar esse comportamento, defina a opção Ocultar compartilhamentos SMB na instância de volume do Google Cloud NetApp Volumes .
+
+Lembre-se de que apenas uma conexão do Active Directory é permitida por região.
+
+image:ncvs-gc-017.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+image:ncvs-gc-018.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+A tabela a seguir mostra uma lista de funcionalidades suportadas/não suportadas para o MMC.
+
+|===
+| Funções suportadas | Funções não suportadas 
+
+
+ a| 
+* Ver compartilhamentos
+* Ver sessões SMB ativas
+* Ver arquivos abertos
+* Ver usuários e grupos locais
+* Ver associações de grupos locais
+* Enumerar a lista de sessões, arquivos e conexões de árvore no sistema
+* Feche os arquivos abertos no sistema
+* Fechar sessões abertas
+* Criar/gerenciar compartilhamentos
+
+ a| 
+* Criação de novos usuários/grupos locais
+* Gerenciando/visualizando usuários/grupos locais existentes
+* Ver eventos ou registros de desempenho
+* Gerenciando armazenamento
+* Gerenciando serviços e aplicativos
+
+
+|===
+
+
+== Informações de segurança do servidor SMB
+
+O servidor SMB no Google Cloud NetApp Volumes usa uma série de opções que definem políticas de segurança para conexões SMB, incluindo coisas como distorção do relógio Kerberos, idade do tíquete, criptografia e muito mais.
+
+A tabela a seguir contém uma lista dessas opções, o que elas fazem, as configurações padrão e se elas podem ser modificadas com o Google Cloud NetApp Volumes.  Algumas opções não se aplicam ao Google Cloud NetApp Volumes.
+
+|===
+| Opção de segurança | O que ele faz | Valor padrão | Pode mudar? 
+
+
+| Desvio máximo do relógio Kerberos (minutos) | Disparidade máxima de tempo entre o Google Cloud NetApp Volumes e os controladores de domínio.  Se o desvio de tempo exceder 5 minutos, a autenticação Kerberos falhará.  Isso é definido como o valor padrão do Active Directory. | 5 | Não 
+
+
+| Tempo de vida do tíquete Kerberos (horas) | Tempo máximo que um tíquete Kerberos permanece válido antes de precisar ser renovado.  Caso não haja renovação antes das 10 horas, será necessário adquirir um novo ingresso.  O Google Cloud NetApp Volumes executa essas renovações automaticamente.  10 horas é o valor padrão do Active Directory. | 10 | Não 
+
+
+| Renovação máxima do tíquete Kerberos (dias) | Número máximo de dias que um tíquete Kerberos pode ser renovado antes que uma nova solicitação de autorização seja necessária.  O Google Cloud NetApp Volumes renova automaticamente os tíquetes para conexões SMB.  Sete dias é o valor padrão do Active Directory. | 7 | Não 
+
+
+| Tempo limite de conexão do Kerberos KDC (segs) | O número de segundos antes que o tempo limite da conexão KDC seja atingido. | 3 | Não 
+
+
+| Exigir assinatura para tráfego SMB de entrada | Configuração para exigir assinatura para tráfego SMB.  Se definido como verdadeiro, os clientes que não oferecem suporte à assinatura falham na conectividade. | Falso |  
+
+
+| Exigir complexidade de senha para contas de usuários locais | Usado para senhas de usuários SMB locais.  O Google Cloud NetApp Volumes não oferece suporte à criação de usuários locais, portanto, esta opção não se aplica ao Google Cloud NetApp Volumes. | Verdadeiro | Não 
+
+
+| Use start_tls para conexões LDAP do Active Directory | Usado para habilitar o início de conexões TLS para o LDAP do Active Directory.  O Google Cloud NetApp Volumes não oferece suporte para essa ativação no momento. | Falso | Não 
+
+
+| A criptografia AES-128 e AES-256 para Kerberos está habilitada? | Isso controla se a criptografia AES é usada para conexões do Active Directory e é controlada com a opção Habilitar criptografia AES para autenticação do Active Directory ao criar/modificar a conexão do Active Directory. | Falso | Sim 
+
+
+| Nível de compatibilidade LM | Nível de dialetos de autenticação suportados para conexões do Active Directory.  Veja a seção "<<Dialetos de autenticação SMB>> " para mais informações. | ntlmv2-krb | Não 
+
+
+| Exigir criptografia SMB para tráfego CIFS de entrada | Requer criptografia SMB para todos os compartilhamentos.  Isso não é usado pelo Google Cloud NetApp Volumes; em vez disso, defina a criptografia por volume (consulte a seção "<<Recursos de segurança de compartilhamento de PMEs>> "). | Falso | Não 
+
+
+| Segurança da sessão do cliente | Define assinatura e/ou selagem para comunicação LDAP.  Isso não está definido atualmente no Google Cloud NetApp Volumes, mas pode ser necessário em versões futuras para resolver o problema.  A correção para problemas de autenticação LDAP devido ao patch do Windows é abordada na seçãolink:gcp-gcnv-nas-dependencies.html#ldap-channel-binding["Ligação de canal LDAP."] . | Nenhum | Não 
+
+
+| Habilitação SMB2 para conexões DC | Usa SMB2 para conexões DC.  Ativado por padrão. | Padrão do sistema | Não 
+
+
+| Busca de referência LDAP | Ao usar vários servidores LDAP, a busca de referência permite que o cliente consulte outros servidores LDAP na lista quando uma entrada não for encontrada no primeiro servidor.  Atualmente, isso não é suportado pelo Google Cloud NetApp Volumes. | Falso | Não 
+
+
+| Use LDAPS para conexões seguras do Active Directory | Permite o uso de LDAP sobre SSL.  Atualmente não é compatível com o Google Cloud NetApp Volumes. | Falso | Não 
+
+
+| A criptografia é necessária para conexão DC | Requer criptografia para conexões DC bem-sucedidas.  Desativado por padrão no Google Cloud NetApp Volumes. | Falso | Não 
+|===

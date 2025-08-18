@@ -1,0 +1,66 @@
+---
+sidebar: sidebar 
+permalink: openshift/os-solutions-overview.html 
+keywords: NetApp Solutions, hybrid cloud, container workloads, containers, Red Hat OpenShift, RedHat OpenShift, VMware, ROSA, ACC, Trident Protect, Advanced Cluster Management, ACM, Hub Cluster 
+summary:  
+---
+= Soluções NetApp Hybrid Multicloud para cargas de trabalho do Red Hat OpenShift Container
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+A NetApp está observando um aumento significativo de clientes modernizando seus aplicativos empresariais legados e criando novos aplicativos usando contêineres e plataformas de orquestração criadas em torno do Kubernetes.  O Red Hat OpenShift Container Platform é um exemplo que vemos adotado por muitos de nossos clientes.
+
+
+
+== Visão geral
+
+À medida que mais e mais clientes começam a adotar contêineres em suas empresas, a NetApp está perfeitamente posicionada para ajudar a atender às necessidades de armazenamento persistente de seus aplicativos com estado e às necessidades clássicas de gerenciamento de dados, como proteção de dados, segurança de dados e migração de dados.  No entanto, essas necessidades são atendidas por meio de diferentes estratégias, ferramentas e métodos.
+
+As opções de armazenamento baseadas em ** NetApp ONTAP** listadas abaixo oferecem segurança, proteção de dados, confiabilidade e flexibilidade para contêineres e implantações do Kubernetes.
+
+* Armazenamento autogerenciado no local:
++
+** Armazenamento conectado à estrutura NetApp (FAS ), matrizes FAS All Flash NetApp ( AFF), matriz All SAN NetApp (ASA) e ONTAP Select
+
+
+* Armazenamento gerenciado pelo provedor no local:
++
+** O NetApp Keystone fornece armazenamento como serviço (STaaS)
+
+
+* Armazenamento autogerenciado na nuvem:
++
+** O NetApp Cloud Volumes ONTAP(CVO) fornece armazenamento autogerenciado em hiperescaladores
+
+
+* Armazenamento gerenciado pelo provedor na nuvem:
++
+** Amazon FSx for NetApp ONTAP, Azure NetApp Files e Google Cloud NetApp Volumes fornecem armazenamento baseado em arquivos na nuvem.
+
+
+
+
+image:rhhc-ontap-features.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+** O NetApp BlueXP** permite que você gerencie todos os seus ativos de armazenamento e dados a partir de um único plano de controle/interface.
+
+Você pode usar o BlueXP para criar e administrar armazenamento em nuvem (por exemplo, Cloud Volumes ONTAP e Azure NetApp Files), para mover, proteger e analisar dados e para controlar muitos dispositivos de armazenamento locais e de ponta.
+
+** NetApp Trident** é um orquestrador de armazenamento compatível com CSI que permite o consumo rápido e fácil de armazenamento persistente apoiado por uma variedade de opções de armazenamento NetApp mencionadas acima.  É um software de código aberto mantido e suportado pela NetApp.
+
+image:rhhc-trident-features.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+Cargas de trabalho de contêineres críticas aos negócios precisam de mais do que apenas volumes persistentes.  Seus requisitos de gerenciamento de dados também exigem proteção e migração dos objetos do aplicativo Kubernetes.
+
+
+NOTE: Os dados do aplicativo incluem objetos do Kubernetes, além dos dados do usuário. Alguns exemplos são os seguintes: - objetos do Kubernetes, como especificações de pods, PVCs, implantações, serviços - objetos de configuração personalizados, como mapas de configuração e segredos - dados persistentes, como cópias de snapshot, backups, clones - recursos personalizados, como CRs e CRDs
+
+** NetApp Trident Protect**, disponível como um software gratuito e de código aberto mantido pela NetApp, fornece recursos avançados de gerenciamento de dados de aplicativos que aprimoram a funcionalidade e a disponibilidade de aplicativos Kubernetes com estado, apoiados pelos sistemas de armazenamento NetApp ONTAP e pelo provisionador de armazenamento NetApp Trident CSI.  O Trident Protect simplifica o gerenciamento, a proteção e a movimentação de cargas de trabalho em contêineres entre nuvens públicas e ambientes locais.  Ele também oferece recursos de automação por meio de sua API e CLI.
+
+Esta documentação de referência fornece validação da proteção de dados de aplicativos baseados em contêineres, implantados na plataforma RedHat OpenShift usando o Trident Protect.  Além disso, a solução fornece detalhes de alto nível para a implantação e o uso do Red Hat Advanced Cluster Management (ACM) para gerenciar as plataformas de contêineres.  O documento também destaca os detalhes para a integração do armazenamento NetApp com plataformas de contêiner Red Hat OpenShift usando o provisionador Trident CSI.

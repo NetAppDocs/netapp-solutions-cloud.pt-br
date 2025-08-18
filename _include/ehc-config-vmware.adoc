@@ -1,0 +1,62 @@
+= 
+:allow-uri-read: 
+
+
+[role="tabbed-block"]
+====
+.AWS / VMC
+--
+Esta seção descreve como configurar e gerenciar o VMware Cloud on AWS SDDC e usá-lo em combinação com as opções disponíveis para conectar o armazenamento NetApp .
+
+
+NOTE: O armazenamento no convidado é o único método suportado para conectar o Cloud Volumes ONTAP ao AWS VMC.
+
+O processo de configuração pode ser dividido nas seguintes etapas:
+
+* Implantar e configurar o VMware Cloud para AWS
+* Conecte o VMware Cloud ao FSx ONTAP
+
+
+Veja o detalhadolink:../vmware/vmw-aws-vmc-setup.html["etapas de configuração para VMC"] .
+
+Veja o detalhadolink:../vmware/vmw-aws-vmc-setup.html["etapas de configuração para VMC"] .
+
+--
+.Azure / AVS
+--
+Esta seção descreve como configurar e gerenciar o Azure VMware Solution e usá-lo em combinação com as opções disponíveis para conectar o armazenamento NetApp .
+
+
+NOTE: O armazenamento no convidado é o único método suportado para conectar o Cloud Volumes ONTAP ao Azure VMware Solution.
+
+O processo de configuração pode ser dividido nas seguintes etapas:
+
+* Registre o provedor de recursos e crie uma nuvem privada
+* Conectar-se a um gateway de rede virtual ExpressRoute novo ou existente
+* Valide a conectividade de rede e acesse a nuvem privada
+
+
+Veja o detalhadolink:azure-setup.html["etapas de configuração para AVS"] .
+
+Veja o detalhadolink:azure-setup.html["etapas de configuração para AVS"] .
+
+--
+.GCP / GCVE
+--
+Esta seção descreve como configurar e gerenciar o GCVE e usá-lo em combinação com as opções disponíveis para conectar o armazenamento NetApp .
+
+
+NOTE: O armazenamento no convidado é o único método suportado para conectar o Cloud Volumes ONTAP e o Google Cloud NetApp Volumes ao GCVE.
+
+O processo de configuração pode ser dividido nas seguintes etapas:
+
+* Implantar e configurar o GCVE
+* Habilitar acesso privado ao GCVE
+
+
+Veja o detalhadolink:gcp-setup.html["etapas de configuração para GCVE"] .
+
+Veja o detalhadolink:gcp-setup.html["etapas de configuração para GCVE"] .
+
+--
+====

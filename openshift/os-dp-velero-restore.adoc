@@ -1,0 +1,128 @@
+---
+sidebar: sidebar 
+permalink: openshift/os-dp-velero-restore.html 
+keywords: OpenShift, OCP, Trident, NetApp ONTAP, Red Hat OpenShift, OADP operator, Openshift Data Protection Application operator, Velero 
+summary: Proteção de dados de aplicativos Red Hat OpenShift Container com NetApp ONTAP 
+---
+= Restaurar um aplicativo a partir de um backup
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Esta seção descreve como restaurar aplicativos de um backup.
+
+
+
+== Pré-requisitos
+
+Para restaurar a partir de um backup, vamos supor que o namespace onde o aplicativo existia foi excluído acidentalmente.
+
+image:redhat-openshift-oadp-app-deleted-001.png["Aplicativo excluído"]
+
+.Restaurar para o mesmo namespace
+[%collapsible%open]
+====
+Para restaurar o backup que acabamos de criar, precisamos criar um Recurso Personalizado de Restauração (CR).  Precisamos fornecer um nome, fornecer o nome do backup que queremos restaurar e definir restorePVs como verdadeiro.  Parâmetros adicionais podem ser definidos conforme mostrado nalink:https://docs.openshift.com/container-platform/4.14/backup_and_restore/application_backup_and_restore/backing_up_and_restoring/restoring-applications.html["documentação"] .  Clique no botão Criar.
+
+image:redhat-openshift-oadp-restore-001.png["Criar Restaurar CR"]
+
+....
+apiVersion: velero.io/v1
+kind: Restore
+apiVersion: velero.io/v1
+metadata:
+  name: restore
+  namespace: openshift-adp
+spec:
+  backupName: backup-postgresql-ontaps3
+  restorePVs: true
+....
+Quando a fase for exibida como concluída, você poderá ver que o aplicativo foi restaurado ao estado em que o instantâneo foi tirado.  O aplicativo é restaurado para o mesmo namespace.
+
+image:redhat-openshift-oadp-restore-002.png["Restauração concluída"] image:redhat-openshift-oadp-restore-002-a.png["Restaurado para o mesmo namespace"]
+
+====
+.Restaurar para um namespace diferente
+[%collapsible%open]
+====
+Para restaurar o aplicativo para um namespace diferente, você pode fornecer um namespaceMapping na definição yaml do CR de restauração.
+
+O arquivo yaml de exemplo a seguir cria um CR de restauração para restaurar um aplicativo e seu armazenamento persistente do namespace postgresql para o novo namespace postgresql-restored.
+
+....
+apiVersion: velero.io/v1
+kind: Restore
+metadata:
+  name: restore-to-different-ns
+  namespace: openshift-adp
+spec:
+  backupName: backup-postgresql-ontaps3
+  restorePVs: true
+  includedNamespaces:
+  - postgresql
+  namespaceMapping:
+    postgresql: postgresql-restored
+....
+Quando a fase for exibida como concluída, você poderá ver que o aplicativo foi restaurado ao estado em que o instantâneo foi tirado.  O aplicativo é restaurado para um namespace diferente, conforme especificado no yaml.
+
+image:redhat-openshift-oadp-restore-003.png["Restauração concluída para um novo namespace"]
+
+====
+.Restaurar para uma classe de armazenamento diferente
+[%collapsible%open]
+====
+O Velero fornece uma capacidade genérica de modificar os recursos durante a restauração especificando patches json.  Os patches json são aplicados aos recursos antes de serem restaurados.  Os patches json são especificados em um configmap e o configmap é referenciado no comando restore.  Este recurso permite que você restaure usando diferentes classes de armazenamento.
+
+No exemplo abaixo, o aplicativo, durante a implantação, usa ontap-nas como classe de armazenamento para seus volumes persistentes.  Um backup do aplicativo chamado backup-postgresql-ontaps3 é criado.
+
+image:redhat-openshift-oadp-restore-004.png["VM usando ontap-nas"]
+
+image:redhat-openshift-oadp-restore-005.png["Backup de VM ontap-nas"]
+
+Simule a perda do aplicativo desinstalando-o.
+
+Para restaurar a VM usando uma classe de armazenamento diferente, por exemplo, classe de armazenamento ontap-nas-eco, você precisa seguir estas duas etapas:
+
+**Passo 1**
+
+Crie um mapa de configuração (console) no namespace openshift-adp da seguinte maneira: Preencha os detalhes conforme mostrado na captura de tela: Selecione o namespace: openshift-adp Nome: change-ontap-sc (pode ser qualquer nome) Chave: change-ontap-sc-config.yaml: Valor:
+
+....
+version: v1
+resourceModifierRules:
+- conditions:
+     groupResource: persistentvolumeclaims
+     resourceNameRegex: "data-postgresql*"
+     namespaces:
+     - postgresql
+  patches:
+  - operation: replace
+    path: "/spec/storageClassName"
+    value: "ontap-nas-eco"
+....
+image:redhat-openshift-oadp-restore-006.png["mapa de configuração da interface do usuário"]
+
+O objeto do mapa de configuração resultante deve ter esta aparência (CLI):
+
+image:redhat-openshift-oadp-restore-007.png["mapa de configuração CLI"]
+
+Este mapa de configuração aplicará a regra do modificador de recursos quando a restauração for criada.  Um patch será aplicado para substituir o nome da classe de armazenamento para ontap-nas-eco para todas as declarações de volume persistentes que começam com rhel.
+
+**Etapa 2**
+
+Para restaurar a VM, use o seguinte comando do Velero CLI:
+
+....
+
+#velero restore create restore1 --from-backup backup1 --resource-modifier-configmap change-storage-class-config -n openshift-adp
+....
+O aplicativo é restaurado no mesmo namespace com as reivindicações de volume persistentes criadas usando a classe de armazenamento ontap-nas-eco.
+
+image:redhat-openshift-oadp-restore-008.png["Restauração de VM ontap-nas-eco"]
+
+====

@@ -1,0 +1,128 @@
+---
+sidebar: sidebar 
+permalink: google/gcp-gcnv-data-encrypt-in-transit.html 
+keywords: google cloud network, nas protocols, smb encryption, NFSv4.1 Kerberos 
+summary: Os dados em trânsito podem ser criptografados na camada do protocolo NAS, e a própria rede do Google Cloud é criptografada, conforme descrito nas seções a seguir. 
+---
+= Criptografia de dados em trânsito
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Os dados em trânsito podem ser criptografados na camada do protocolo NAS, e a própria rede do Google Cloud é criptografada, conforme descrito nas seções a seguir.
+
+
+
+== Rede Google Cloud
+
+O Google Cloud criptografa o tráfego no nível da rede, conforme descrito em https://cloud.google.com/security/encryption-in-transit["Criptografia em trânsito"^] na documentação do Google.  Conforme mencionado na seção "Arquitetura do Google Cloud NetApp Volumes" , o Google Cloud NetApp Volumes é entregue a partir de um projeto de produtor PSA controlado pela NetApp.
+
+No caso do NetApp Volumes-SW, o locatário produtor executa VMs do Google para fornecer o serviço.  O tráfego entre as VMs do usuário e as VMs do Google Cloud NetApp Volumes é criptografado automaticamente pelo Google.
+
+Embora o caminho de dados para o NetApp Volumes-Performance não seja totalmente criptografado na camada de rede, a NetApp e o Google usam uma combinação https://1.ieee802.org/security/802-1ae/["de criptografia IEEE 802.1AE (MACSec)"^] , https://datatracker.ietf.org/doc/html/rfc2003["encapsulamento"^] (criptografia de dados) e redes fisicamente restritas para proteger dados em trânsito entre o tipo de serviço NetApp Google Cloud NetApp Volumes e o Google Cloud.
+
+
+
+== Protocolos NAS
+
+Os protocolos NFS e SMB NAS fornecem criptografia de transporte opcional na camada de protocolo.
+
+
+
+=== Criptografia SMB
+
+https://docs.microsoft.com/en-us/windows-server/storage/file-server/smb-security["Criptografia SMB"^]fornece criptografia de ponta a ponta de dados de SMB e protege os dados contra ocorrências de espionagem em redes não confiáveis.  Você pode habilitar a criptografia para a conexão de dados cliente/servidor (disponível somente para clientes compatíveis com SMB3.x) e a autenticação do servidor/controlador de domínio.
+
+Quando a criptografia SMB está habilitada, os clientes que não oferecem suporte à criptografia não podem acessar o compartilhamento.
+
+O Google Cloud NetApp Volumes oferece suporte às cifras de segurança RC4-HMAC, AES-128-CTS-HMAC-SHA1 e AES-256-CTS-HMAC-SHA1 para criptografia SMB.  O SMB negocia com o tipo de criptografia mais alto suportado pelo servidor.
+
+
+
+=== NFSv4.1 Kerberos
+
+Para NFSv4.1, o NetApp Volumes-Performance oferece autenticação Kerberos conforme descrito em https://datatracker.ietf.org/doc/html/rfc7530["RFC7530"^] . Você pode habilitar o Kerberos por volume.
+
+O tipo de criptografia mais forte disponível atualmente para Kerberos é AES-256-CTS-HMAC-SHA1.  O Google Cloud NetApp Volumes é compatível com AES-256-CTS-HMAC-SHA1, AES-128-CTS-HMAC-SHA1, DES3 e DES para NFS.  Ele também suporta ARCFOUR-HMAC (RC4) para tráfego CIFS/SMB, mas não para NFS.
+
+O Kerberos fornece três níveis de segurança diferentes para montagens NFS que oferecem opções de quão forte a segurança do Kerberos deve ser.
+
+De acordo com a RedHat https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/storage_administration_guide/s1-nfs-client-config-options["Opções de montagem comuns"^] documentação:
+
+....
+sec=krb5 uses Kerberos V5 instead of local UNIX UIDs and GIDs to authenticate users.
+sec=krb5i uses Kerberos V5 for user authentication and performs integrity checking of NFS operations using secure checksums to prevent data tampering.
+sec=krb5p uses Kerberos V5 for user authentication, integrity checking, and encrypts NFS traffic to prevent traffic sniffing. This is the most secure setting, but it also involves the most performance overhead.
+....
+Como regra geral, quanto mais o nível de segurança do Kerberos precisa fazer, pior é o desempenho, pois o cliente e o servidor gastam tempo criptografando e descriptografando operações NFS para cada pacote enviado.  Muitos clientes e servidores NFS oferecem suporte para descarregamento AES-NI para as CPUs para uma melhor experiência geral, mas o impacto do Kerberos 5p (criptografia completa de ponta a ponta) no desempenho é significativamente maior que o impacto do Kerberos 5 (autenticação do usuário).
+
+A tabela a seguir mostra as diferenças no que cada nível faz pela segurança e desempenho.
+
+|===
+| Nível de segurança | Segurança | Desempenho 
+
+
+| NFSv3—sistema  a| 
+* Menos seguro; texto simples com IDs de usuário/grupo numéricos
+* Capaz de visualizar UID, GID, endereços IP do cliente, caminhos de exportação, nomes de arquivos, permissões em capturas de pacotes
+
+ a| 
+* Melhor para a maioria dos casos
+
+
+
+
+| NFSv4.x—sistema  a| 
+* Mais seguro que o NFSv3 (IDs de cliente, correspondência de string de nome/string de domínio), mas ainda texto simples
+* Capaz de visualizar UID, GID, endereços IP de clientes, sequências de nomes, IDs de domínio, caminhos de exportação, nomes de arquivos, permissões em capturas de pacotes
+
+ a| 
+* Bom para cargas de trabalho sequenciais (como VMs, bancos de dados, arquivos grandes)
+* Ruim com alta contagem de arquivos/altos metadados (30-50% pior)
+
+
+
+
+| NFS—krb5  a| 
+* Criptografia Kerberos para credenciais em cada pacote NFS — envolve UID/GID de usuários/grupos em chamadas RPC no wrapper GSS
+* O usuário que solicita acesso à montagem precisa de um tíquete Kerberos válido (por meio de nome de usuário/senha ou troca manual de chave); o tíquete expira após um período de tempo especificado e o usuário deve se autenticar novamente para obter acesso
+* Nenhuma criptografia para operações NFS ou protocolos auxiliares como mount/portmapper/nlm (pode ver caminhos de exportação, endereços IP, identificadores de arquivo, permissões, nomes de arquivo, atime/mtime em capturas de pacotes)
+
+ a| 
+* Melhor na maioria dos casos para Kerberos; pior que AUTH_SYS
+
+
+
+
+| NFS—krb5i  a| 
+* Criptografia Kerberos para credenciais em cada pacote NFS — envolve UID/GID de usuários/grupos em chamadas RPC no wrapper GSS
+* O usuário que solicita acesso à montagem precisa de um tíquete Kerberos válido (por meio de nome de usuário/senha ou troca manual de chave); o tíquete expira após um período de tempo especificado e o usuário deve se autenticar novamente para obter acesso
+* Nenhuma criptografia para operações NFS ou protocolos auxiliares como mount/portmapper/nlm (pode ver caminhos de exportação, endereços IP, identificadores de arquivo, permissões, nomes de arquivo, atime/mtime em capturas de pacotes)
+* A soma de verificação Kerberos GSS é adicionada a cada pacote para garantir que nada intercepte os pacotes.  Se as somas de verificação corresponderem, a conversa será permitida.
+
+ a| 
+* Melhor que o krb5p porque a carga útil do NFS não é criptografada; a única sobrecarga adicionada em comparação ao krb5 é a soma de verificação de integridade.  O desempenho do krb5i não será muito pior que o do krb5, mas sofrerá alguma degradação.
+
+
+
+
+| NFS – krb5p  a| 
+* Criptografia Kerberos para credenciais em cada pacote NFS — envolve UID/GID de usuários/grupos em chamadas RPC no wrapper GSS
+* O usuário que solicita acesso à montagem precisa de um tíquete Kerberos válido (por meio de nome de usuário/senha ou troca manual de keytab); o tíquete expira após um período de tempo especificado e o usuário deve se autenticar novamente para obter acesso
+* Todas as cargas de pacotes NFS são criptografadas com o wrapper GSS (não é possível ver identificadores de arquivos, permissões, nomes de arquivos, atime/mtime em capturas de pacotes).
+* Inclui verificação de integridade.
+* O tipo de operação NFS é visível (FSINFO, ACCESS, GETATTR e assim por diante).
+* Protocolos auxiliares (mount, portmap, nlm e assim por diante) não são criptografados - (pode ver caminhos de exportação, endereços IP)
+
+ a| 
+* Pior desempenho dos níveis de segurança; o krb5p precisa criptografar/descriptografar mais.
+* Melhor desempenho que krb5p com NFSv4.x para cargas de trabalho com alta contagem de arquivos.
+
+
+|===
+No Google Cloud NetApp Volumes, um servidor Active Directory configurado é usado como servidor Kerberos e servidor LDAP (para pesquisar identidades de usuários em um esquema compatível com RFC2307).  Nenhum outro servidor Kerberos ou LDAP é suportado.  A NetApp recomenda fortemente que você use o LDAP para gerenciamento de identidade no Google Cloud NetApp Volumes.  Para obter informações sobre como o NFS Kerberos é exibido em capturas de pacotes, consulte a seção link:gcp-gcnv-arch-detail.html#Considerações sobre detecção/rastreamento de pacotes["Considerações sobre detecção/rastreamento de pacotes."]

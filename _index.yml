@@ -1,0 +1,66 @@
+---
+indexpage:
+  title: Soluções de nuvem pública e híbrida da NetApp
+  summary: As soluções da NetApp são um conjunto de recursos estratégicos e tecnológicos
+    que enfatizam o portfólio de produtos e serviços da NetApp para dar suporte às
+    necessidades comerciais mais críticas dos nossos clientes.
+  lead: As soluções da NetApp são um conjunto de recursos estratégicos e tecnológicos
+    que enfatizam o portfólio de produtos e serviços da NetApp para dar suporte às
+    necessidades comerciais mais críticas dos nossos clientes.
+  tiles:
+  - title: Começar
+    links:
+    - title: O que há de novo
+      url: "/whats-new.html"
+    - title: Blogs
+      url: "/blogs.html"
+    - title: Vídeos e demonstrações
+      url: "/videos/index.html"
+  - title: Soluções de nuvem NetApp para VMware
+    links:
+    - title: VMware para nuvem pública
+      url: "/vmware/vmw-hybrid-overview.html"
+    - title: Casos de uso da nuvem híbrida VMware
+      url: "/vmware/vmw-hybrid-use-cases.html"
+    - title: NetApp para AWS/VMC
+      url: "/vmware/vmw-aws-vmc-overview.html"
+    - title: NetApp para AWS/EVS
+      url: "/vmware/evs-mount-fsxn-intro.html"
+    - title: NetApp para Azure/AVS
+      url: "/vmware/vmw-azure-avs-overview.html"
+    - title: NetApp para GCP/GCVE
+      url: "/vmware/vmw-gcp-gcve-overview.html"
+    - title: BlueXP disaster recovery para VMware
+      url: "/vmware/vmw-hybrid-dr-overview.html"
+  - title: Soluções de nuvem da NetApp para OpenShift
+    links:
+    - title: OpenShift para local
+      url: "/openshift/os-op-solution.html"
+    - title: Nuvem híbrida com componentes autogerenciados
+      url: "/openshift/os-sm-solution.html"
+    - title: Nuvem híbrida com componentes gerenciados pelo provedor
+      url: "/openshift/os-pm-solution.html"
+    - title: Proteja os dados usando o Trident Protect
+      url: "/openshift/os-dp-tp-solution.html"
+    - title: Proteja aplicativos de contêiner usando ferramentas de terceiros
+      url: "/openshift/os-dp-velero-solution.html"
+  - title: Solução VMware Sovereign Cloud
+    links:
+    - title: Saiba mais sobre a Sovereign Cloud
+      url: https://docs.netapp.com/us-en/netapp-solutions-virtualization/vmware/vmw-sovereign-cloud.html
+    - title: Integrações da NetApp com a Sovereign Cloud
+      url: https://docs.netapp.com/us-en/netapp-solutions-virtualization/vmware/vmw-sovereign-cloud-use-cases.html
+    - title: Visão geral da solução para Nuvem Soberana
+      url: https://www.vmware.com/content/dam/digitalmarketing/vmware/en/pdf/docs/vmw-sovereign-cloud-solution-brief-customer.pdf
+    - title: Nuvem Soberana explicada
+      url: https://www.vmware.com/topics/glossary/content/sovereign-cloud.html
+    - title: Infraestrutura segura e compatível do VMware Sovereign Cloud
+      url: https://www.vmware.com/solutions/cloud-infrastructure/sovereign-cloud
+  - title: Solicitações de soluções e feedback
+    links:
+    - title: Solicitação de automação
+      url: https://github.com/NetAppDocs/netapp-solutions/issues/new?body=[Request%20Automation]%0d%0a%0d%0aSolution%20Name:%20%0d%0aRequest%20Title:%20%0d%0aDescription:%0d%0aSuggestions:&title=Request%20Automation%20-%20%3Crequest_title%3E
+    - title: Proponha uma nova solução
+      url: https://github.com/NetAppDocs/netapp-solutions/issues/new?body=[Request%20Solution]%0d%0a%0d%0aSolution%20Use%20Case:%20%0d%0aSolution%20Description:%20%0d%0aAdditional%20Comments:&title=Request%20Solution%20-%20%3Csolution%3E
+    - title: Fornecer feedback da solução
+      url: https://github.com/NetAppDocs/netapp-solutions/issues/new?body=[Solution%20Feedback]%0d%0a%0d%0aSolution%20Name:%20%0d%0aSolution%20Feedback:%20%0d%0aAdditional%20Comments:&title=Solution%20Feedback%20-%20%3Csolution%3E

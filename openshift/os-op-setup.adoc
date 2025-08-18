@@ -1,0 +1,86 @@
+---
+sidebar: sidebar 
+permalink: openshift/os-op-setup.html 
+keywords: NetApp Solutions, redhat OpenShift, red hat OpenShift, redhat openshift container platform, ocp, openshift container platform, Advanced Cluster Management, ACM, Hub Cluster, containers, container workloads, VMware, customer managed storage, ONTAP 
+summary:  
+---
+= Implantar e configurar a plataforma Red Hat OpenShift Container no VMware
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Esta seção descreve um fluxo de trabalho de alto nível sobre como configurar e gerenciar clusters OpenShift e gerenciar aplicativos com estado neles.  Ele mostra o uso de matrizes de armazenamento NetApp ONTAP com a ajuda do Trident para fornecer volumes persistentes.
+
+
+NOTE: Há várias maneiras de implantar clusters da plataforma Red Hat OpenShift Container.  Esta descrição de alto nível da configuração fornece links de documentação para o método específico que foi usado.  Você pode consultar os outros métodos nos links relevantes fornecidos nolink:os-solutions-resources.html["seção de recursos"] .
+
+Aqui está um diagrama que descreve os clusters implantados no VMware em um data center.
+
+image:rhhc-on-premises.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+O processo de configuração pode ser dividido nas seguintes etapas:
+
+.Implantar e configurar uma VM CentOS
+[%collapsible%open]
+====
+* Ele é implantado no ambiente VMware vSphere.
+* Esta VM é usada para implantar alguns componentes, como o NetApp Trident e o NetApp Trident Protect, para a solução.
+* Um usuário root é configurado nesta VM durante a instalação.
+
+
+====
+.Implantar e configurar um cluster do OpenShift Container Platform no VMware vSphere (Hub Cluster)
+[%collapsible%open]
+====
+Consulte as instruções para olink:https://docs.openshift.com/container-platform/4.17/installing/installing_vsphere/installing-vsphere-assisted-installer.html["Implantação assistida"] método para implantar um cluster OCP.
+
+
+TIP: Lembre-se do seguinte: - Crie uma chave ssh pública e privada para fornecer ao instalador.  Essas chaves serão usadas para fazer login nos nós mestre e de trabalho, se necessário.  - Baixe o programa instalador do instalador assistido.  Este programa é usado para inicializar as VMs que você cria no ambiente VMware vSphere para os nós mestre e de trabalho.  - As VMs devem ter os requisitos mínimos de CPU, memória e disco rígido.  (Consulte os comandos vm create emlink:https://docs.redhat.com/en/documentation/assisted_installer_for_openshift_container_platform/2024/html/installing_openshift_container_platform_with_the_assisted_installer/installing-on-vsphere["esse"] página para os nós mestre e de trabalho que fornecem essas informações) - O diskUUID deve ser habilitado em todas as VMs.  - Crie no mínimo 3 nós para o mestre e 3 nós para o trabalhador.  - Assim que forem descobertos pelo instalador, ative o botão de alternância de integração do VMware vSphere.
+
+====
+.Instalar o Advanced Cluster Management no cluster Hub
+[%collapsible%open]
+====
+Ele é instalado usando o Advanced Cluster Management Operator no Hub Cluster.  Consulte as instruçõeslink:https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.7/html/install/installing#doc-wrapper["aqui"] .
+
+====
+.Instalar dois clusters OCP adicionais (Origem e Destino)
+[%collapsible%open]
+====
+* Os clusters adicionais podem ser implantados usando o ACM no Hub Cluster.
+* Consulte as instruçõeslink:https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.7/html/clusters/cluster_mce_overview#vsphere_prerequisites["aqui"] .
+
+
+====
+.Configurar o armazenamento NetApp ONTAP
+[%collapsible%open]
+====
+* Instale um cluster ONTAP com conectividade com as VMs OCP no ambiente VMWare.
+* Crie uma SVM.
+* Configure o data life do NAS para acessar o armazenamento no SVM.
+
+
+====
+.Instalar o NetApp Trident nos clusters OCP
+[%collapsible%open]
+====
+* Instale o NetApp Trident em todos os três clusters: clusters de hub, de origem e de destino
+* Consulte as instruçõeslink:https://docs.netapp.com/us-en/trident/trident-get-started/kubernetes-deploy-operator.html["aqui"] .
+* Crie um backend de armazenamento para ontap-nas .
+* Crie uma classe de armazenamento para ontap-nas.
+* Consulte as instruçõeslink:https://docs.netapp.com/us-en/trident/trident-use/create-stor-class.html["aqui"] .
+
+
+====
+.Implantar um aplicativo no cluster de origem
+[%collapsible%open]
+====
+Use o OpenShift GitOps para implantar um aplicativo.  (por exemplo, Postgres, Ghost)
+
+====
+O próximo passo é usar o Trident Protect para proteção de dados e migração de dados do cluster de origem para o de destino.  Referirlink:os-dp-tp-solution.html["aqui"] para obter instruções.

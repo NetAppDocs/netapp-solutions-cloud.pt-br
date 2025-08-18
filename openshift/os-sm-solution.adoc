@@ -1,0 +1,29 @@
+---
+sidebar: sidebar 
+permalink: openshift/os-sm-solution.html 
+keywords: NetApp Solutions, redhat OpenShift, red hat OpenShift, redhat openshift container platform, ocp, openshift container platform, Advanced Cluster Management, ACM, Hub Cluster, containers, container workloads, VMware, customer managed storage, ONTAP 
+summary:  
+---
+= Solução NetApp com cargas de trabalho da plataforma Red Hat OpenShift Container em Nuvem Híbrida
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Os clientes podem estar em um ponto em sua jornada de modernização em que estão prontos para mover algumas cargas de trabalho selecionadas ou todas as cargas de trabalho de seus data centers para a nuvem.  Eles podem optar por usar contêineres OpenShift autogerenciados e armazenamento NetApp autogerenciado na nuvem por vários motivos.  Eles devem planejar e implantar a plataforma de contêiner Red Hat OpenShift (OCP) na nuvem para um ambiente pronto para produção bem-sucedido para migrar suas cargas de trabalho de contêiner de seus data centers.  Seus clusters OCP podem ser implantados em VMware ou Bare Metal em seus data centers e em AWS, Azure ou Google Cloud no ambiente de nuvem.
+
+O armazenamento NetApp Cloud Volumes ONTAP oferece proteção de dados, confiabilidade e flexibilidade para implantações de contêineres na AWS, Azure e no Google Cloud.  O Trident atua como um provisionador de armazenamento dinâmico para consumir o armazenamento persistente do Cloud Volumes ONTAP para aplicativos com estado dos clientes.  O Trident Protect pode ser usado para atender aos requisitos de gerenciamento de dados de aplicativos com estado, como proteção de dados, migração e continuidade de negócios.
+
+
+
+== Solução de proteção e migração de dados para cargas de trabalho de contêiner OpenShift em uma nuvem híbrida usando Trident Protect
+
+No local e AWSimage:rhhc-self-managed-aws.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+No local e Google Cloudimage:rhhc-self-managed-gcp.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+No local e na nuvem do Azureimage:rhhc-self-managed-azure.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]

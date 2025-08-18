@@ -1,0 +1,469 @@
+---
+sidebar: sidebar 
+permalink: google/gcp-gcnv-nfs.html 
+keywords: default, local, unix users, groups, root user, anonymous user, acls for NFSv3, 
+summary: 'NFS é um protocolo de sistema de arquivos distribuído que é um padrão IETF aberto definido em Request for Comments (RFC) que permite que qualquer pessoa implemente o protocolo.' 
+---
+= NFS
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NFS é um protocolo de sistema de arquivos distribuído que é um padrão IETF aberto definido em Request for Comments (RFC) que permite que qualquer pessoa implemente o protocolo.
+
+Os volumes no Google Cloud NetApp Volumes são compartilhados com clientes NFS exportando um caminho que pode ser acessado por um cliente ou conjunto de clientes.  As permissões para montar essas exportações são definidas por políticas e regras de exportação, que podem ser configuradas pelos administradores do Google Cloud NetApp Volumes .
+
+A implementação do NetApp NFS é considerada um padrão ouro para o protocolo e é usada em inúmeros ambientes NAS empresariais.  As seções a seguir abordam o NFS e os recursos de segurança específicos disponíveis no Google Cloud NetApp Volumes e como eles são implementados.
+
+
+
+== Usuários e grupos UNIX locais padrão
+
+O Google Cloud NetApp Volumes contém vários usuários e grupos UNIX padrão para diversas funcionalidades básicas.  Esses usuários e grupos não podem ser modificados ou excluídos no momento.  No momento, não é possível adicionar novos usuários e grupos locais ao Google Cloud NetApp Volumes.  Usuários e grupos UNIX fora dos usuários e grupos padrão precisam ser fornecidos por um serviço de nomes LDAP externo.
+
+A tabela a seguir mostra os usuários e grupos padrão e seus IDs numéricos correspondentes.  A NetApp recomenda não criar novos usuários ou grupos no LDAP ou nos clientes locais que reutilizam essas IDs numéricas.
+
+|===
+| Usuários padrão: IDs numéricos | Grupos padrão: IDs numéricos 
+
+
+ a| 
+* raiz:0
+* usuário do computador:65534
+* ninguém:65535
+
+ a| 
+* raiz:0
+* daemon:1
+* usuário do computador:65534
+* ninguém:65535
+
+
+|===
+
+NOTE: Ao usar o NFSv4.1, o usuário root pode ser exibido como ninguém ao executar comandos de listagem de diretórios em clientes NFS.  Isso ocorre devido à configuração de mapeamento de domínio de ID do cliente.  Veja a seção chamada<<NFSv4.1 e o usuário/grupo nobody>> para obter detalhes sobre esse problema e como resolvê-lo.
+
+
+
+== O usuário root
+
+No Linux, a conta root tem acesso a todos os comandos, arquivos e pastas em um sistema de arquivos baseado em Linux.  Devido ao poder dessa conta, as práticas recomendadas de segurança geralmente exigem que o usuário root seja desabilitado ou restringido de alguma forma.  Nas exportações NFS, o poder que um usuário root tem sobre os arquivos e pastas pode ser controlado no Google Cloud NetApp Volumes por meio de políticas e regras de exportação e um conceito conhecido como root squash.
+
+O root squashing garante que o usuário root que acessa uma montagem NFS seja compactado para o usuário numérico anônimo 65534 (consulte a seção "<<O usuário anônimo>> ") e atualmente está disponível somente ao usar o NetApp Volumes-Desempenho selecionando Desativado para acesso root durante a criação da regra de política de exportação.  Se o usuário root for espremido para o usuário anônimo, ele não terá mais acesso para executar chown ou https://en.wikipedia.org/wiki/Setuid["comandos setuid/setgid (a parte pegajosa)"^] em arquivos ou pastas na montagem NFS, e arquivos ou pastas criados pelo usuário root mostram o UID anônimo como proprietário/grupo.  Além disso, as ACLs do NFSv4 não podem ser modificadas pelo usuário root.  Entretanto, o usuário root ainda tem acesso ao chmod e aos arquivos excluídos para os quais não tem permissões explícitas.  Se você quiser limitar o acesso às permissões de arquivo e pasta de um usuário root, considere usar um volume com ACLs NTFS, criando um usuário do Windows chamado `root` , e aplicando as permissões desejadas aos arquivos ou pastas.
+
+
+
+== O usuário anônimo
+
+O ID de usuário anônimo (anon) especifica um ID de usuário UNIX ou nome de usuário que é mapeado para solicitações de cliente que chegam sem credenciais NFS válidas.  Isso pode incluir o usuário root quando o root squashing for usado.  O usuário anônimo no Google Cloud NetApp Volumes é 65534.
+
+Este UID normalmente está associado ao nome de usuário `nobody` ou `nfsnobody` em ambientes Linux.  O Google Cloud NetApp Volumes também usa 65534 como o usuário UNIX local `pcuser` (consulte a seção "<<Usuários e grupos UNIX locais padrão>> "), que também é o usuário de fallback padrão para mapeamentos de nomes do Windows para o UNIX quando nenhum usuário UNIX correspondente válido pode ser encontrado no LDAP.
+
+Devido às diferenças nos nomes de usuário entre o Linux e o Google Cloud NetApp Volumes para o UID 65534, a sequência de nomes para usuários mapeados para 65534 pode não corresponder ao usar o NFSv4.1.  Como resultado, você pode ver `nobody` como o usuário em alguns arquivos e pastas.  Veja a seção "<<NFSv4.1 e o usuário/grupo nobody>> " para obter informações sobre esse problema e como resolvê-lo.
+
+
+
+== Controle de acesso/exportações
+
+O acesso inicial de exportação/compartilhamento para montagens NFS é controlado por meio de regras de política de exportação baseadas em host contidas em uma política de exportação.  Um IP de host, nome de host, sub-rede, grupo de rede ou domínio é definido para permitir acesso para montar o compartilhamento NFS e o nível de acesso permitido ao host.  As opções de configuração da regra de política de exportação dependem do nível do Google Cloud NetApp Volumes .
+
+Para o NetApp Volumes-SW, as seguintes opções estão disponíveis para configuração de política de exportação:
+
+* *Correspondência de clientes.*  Lista separada por vírgulas de endereços IP, lista separada por vírgulas de nomes de host, sub-redes, grupos de rede, nomes de domínio.
+* *Regras de acesso RO/RW.*  Selecione leitura/gravação ou somente leitura para controlar o nível de acesso à exportação. O NetApp Volumes-Performance oferece as seguintes opções:
+* *Correspondência de clientes.*  Lista separada por vírgulas de endereços IP, lista separada por vírgulas de nomes de host, sub-redes, grupos de rede, nomes de domínio.
+* *Regras de acesso RO/RW.*  Selecione leitura/gravação ou somente leitura para controlar o nível de acesso à exportação.
+* *Acesso root (ligado/desligado).*  Configura o root squash (veja a seção "<<O usuário root>> " para mais detalhes).
+* *Tipo de protocolo.*  Isso limita o acesso à montagem NFS a uma versão de protocolo específica.  Ao especificar NFSv3 e NFSv4.1 para o volume, deixe ambos em branco ou marque ambas as caixas.
+* *Nível de segurança Kerberos (quando Ativar Kerberos estiver selecionado).*  Fornece as opções de krb5, krb5i e/ou krb5p para acesso somente leitura ou leitura-gravação.
+
+
+
+
+== Alterar propriedade (chown) e alterar grupo (chgrp)
+
+O NFS no Google Cloud NetApp Volumes permite que somente o usuário root execute chown/chgrp em arquivos e pastas.  Outros usuários veem um `Operation not permitted` erro — mesmo em arquivos que eles possuem.  Se você usar raiz de abóbora (conforme abordado na seção "<<O usuário root>> "), o root é repassado a um usuário não root e não tem permissão para acessar chown e chgrp.  Atualmente, não há soluções alternativas no Google Cloud NetApp Volumes para permitir chown e chgrp para usuários não root.  Se forem necessárias alterações de propriedade, considere usar volumes de protocolo duplo e defina o estilo de segurança como NTFS para controlar as permissões do lado do Windows.
+
+
+
+== Gerenciamento de permissões
+
+O Google Cloud NetApp Volumes oferece suporte a bits de modo (como 644, 777 e assim por diante para rwx) e ACLs NFSv4.1 para controlar permissões em clientes NFS para volumes que usam o estilo de segurança UNIX.  O gerenciamento de permissões padrão é usado para eles (como chmod, chown ou nfs4_setfacl) e funciona com qualquer cliente Linux que os suporte.
+
+Além disso, ao usar volumes de protocolo duplo definidos como NTFS, os clientes NFS podem aproveitar o mapeamento de nomes do Google Cloud NetApp Volumes para usuários do Windows, que são usados para resolver as permissões NTFS.  Isso requer uma conexão LDAP com o Google Cloud NetApp Volumes para fornecer traduções de ID numérico para nome de usuário, porque o Google Cloud NetApp Volumes requer um nome de usuário UNIX válido para mapear corretamente para um nome de usuário do Windows.
+
+
+
+=== Fornecendo ACLs granulares para NFSv3
+
+As permissões de bits de modo abrangem apenas o proprietário, o grupo e todos os outros na semântica, o que significa que não há controles granulares de acesso de usuário para o NFSv3 básico.  O Google Cloud NetApp Volumes não oferece suporte a ACLs POSIX nem a atributos estendidos (como chattr), portanto, ACLs granulares só são possíveis nos seguintes cenários com NFSv3:
+
+* Volumes de estilo de segurança NTFS (servidor CIFS necessário) com mapeamentos de usuários válidos do UNIX para o Windows.
+* ACLs do NFSv4.1 aplicadas usando um cliente de administração montando o NFSv4.1 para aplicar ACLs.
+
+
+Ambos os métodos exigem uma conexão LDAP para gerenciamento de identidade UNIX e informações válidas de usuário e grupo UNIX preenchidas (consulte a seçãolink:gcp-gcnv-nas-dependencies.html#ldap["LDAP"] ) e estão disponíveis somente com instâncias do NetApp Volumes-Performance.  Para usar volumes de estilo de segurança NTFS com NFS, você deve usar protocolo duplo (SMB e NFSv3) ou protocolo duplo (SMB e NFSv4.1), mesmo que nenhuma conexão SMB seja feita.  Para usar ACLs NFSv4.1 com montagens NFSv3, você deve selecionar `Both (NFSv3/NFSv4.1)` como o tipo de protocolo.
+
+Os bits regulares do modo UNIX não fornecem o mesmo nível de granularidade em permissões que as ACLs NTFS ou NFSv4.x fornecem.  A tabela a seguir compara a granularidade de permissão entre bits do modo NFSv3 e ACLs do NFSv4.1.  Para obter informações sobre ACLs NFSv4.1, consulte https://linux.die.net/man/5/nfs4_acl["nfs4_acl - Listas de controle de acesso NFSv4"^] .
+
+|===
+| Bits do modo NFSv3 | ACLs do NFSv4.1 
+
+
+ a| 
+* Definir ID do usuário na execução
+* Definir ID do grupo na execução
+* Salvar texto trocado (não definido em POSIX)
+* Permissão de leitura para o proprietário
+* Permissão de escrita para o proprietário
+* Permissão de execução para o proprietário em um arquivo; ou procurar (pesquisar) permissão para o proprietário no diretório
+* Permissão de leitura para grupo
+* Permissão de escrita para grupo
+* Permissão de execução para grupo em um arquivo; ou procurar (pesquisar) permissão para grupo no diretório
+* Permissão de leitura para outros
+* Permissão de escrita para outros
+* Permissão de execução para outros em um arquivo; ou procurar (pesquisar) permissão para outros no diretório
+
+ a| 
+Tipos de entrada de controle de acesso (ACE) (Permitir/Negar/Auditar) * Sinalizadores de herança * herança de diretório * herança de arquivo * herança sem propagação * somente herança
+
+Permissões * ler-dados (arquivos) / listar-diretórios (diretórios) * gravar-dados (arquivos) / criar-arquivo (diretórios) * anexar-dados (arquivos) / criar-subdiretório (diretórios) * executar (arquivos) / alterar-diretório (diretórios) * excluir * excluir-filho * ler-atributos * gravar-atributos * ler-atributos-nomeados * gravar-atributos-nomeados * ler-ACL * gravar-ACL * gravar-proprietário * Sincronizar
+
+|===
+Por fim, a associação ao grupo NFS (tanto no NFSv3 quanto no NFSV4.x) é limitada a um máximo padrão de 16 para AUTH_SYS, conforme os limites de pacotes RPC.  O NFS Kerberos fornece até 32 grupos e as ACLs NFSv4 removem a limitação por meio de ACLs granulares de usuários e grupos (até 1.024 entradas por ACE).
+
+Além disso, o Google Cloud NetApp Volumes fornece suporte de grupo estendido para ampliar o número máximo de grupos suportados para até 32.  Isso requer uma conexão LDAP com um servidor LDAP que contenha identidades de usuários e grupos UNIX válidas.  Para obter mais informações sobre como configurar isso, consulte https://cloud.google.com/architecture/partners/netapp-cloud-volumes/creating-nfs-volumes?hl=en_US["Criação e gerenciamento de volumes NFS"^] na documentação do Google.
+
+
+
+== IDs de usuários e grupos NFSv3
+
+Os IDs de usuários e grupos do NFSv3 chegam como IDs numéricos em vez de nomes.  O Google Cloud NetApp Volumes não faz resolução de nome de usuário para essas IDs numéricas com NFSv3, com volumes de estilo de segurança UNIX usando apenas bits de modo.  Quando ACLs do NFSv4.1 estão presentes, uma consulta de ID numérica e/ou consulta de sequência de nomes é necessária para resolver a ACL corretamente, mesmo ao usar o NFSv3.  Com volumes de estilo de segurança NTFS, o Google Cloud NetApp Volumes deve resolver uma ID numérica para um usuário UNIX válido e, em seguida, mapear para um usuário Windows válido para negociar direitos de acesso.
+
+
+
+=== Limitações de segurança de IDs de usuários e grupos NFSv3
+
+Com o NFSv3, o cliente e o servidor nunca precisam confirmar se o usuário que tenta uma leitura ou gravação com uma ID numérica é um usuário válido; ele é apenas implicitamente confiável.  Isso expõe o sistema de arquivos a possíveis violações simplesmente falsificando qualquer ID numérica.  Para evitar falhas de segurança como essa, há algumas opções disponíveis para o Google Cloud NetApp Volumes.
+
+* A implementação do Kerberos para NFS força os usuários a se autenticarem com um nome de usuário e senha ou um arquivo keytab para obter um tíquete Kerberos para permitir acesso a uma montagem.  O Kerberos está disponível com instâncias do NetApp Volumes-Performance e somente com o NFSv4.1.
+* Limitar a lista de hosts em suas regras de política de exportação limita quais clientes NFSv3 têm acesso ao volume do Google Cloud NetApp Volumes .
+* O uso de volumes de protocolo duplo e a aplicação de ACLs NTFS ao volume força os clientes NFSv3 a resolver IDs numéricos para nomes de usuários UNIX válidos para autenticação adequada para acessar montagens.  Isso requer a ativação do LDAP e a configuração de identidades de usuários e grupos do UNIX.
+* Eliminar o usuário root limita os danos que um usuário root pode causar a uma montagem NFS, mas não remove completamente o risco.  Para mais informações, consulte a seção "<<O usuário root>> ."
+
+
+Em última análise, a segurança do NFS é limitada ao que a versão do protocolo que você está usando oferece.  O NFSv3, embora tenha melhor desempenho em geral que o NFSv4.1, não oferece o mesmo nível de segurança.
+
+
+
+== NFSv4.1
+
+O NFSv4.1 oferece maior segurança e confiabilidade em comparação ao NFSv3, pelos seguintes motivos:
+
+* Bloqueio integrado por meio de um mecanismo baseado em arrendamento
+* Sessões com estado
+* Toda a funcionalidade NFS em uma única porta (2049)
+* Somente TCP
+* Mapeamento de domínio de ID
+* Integração Kerberos (NFSv3 pode usar Kerberos, mas apenas para NFS, não para protocolos auxiliares como NLM)
+
+
+
+
+=== Dependências do NFSv4.1
+
+Devido aos recursos de segurança adicionais no NFSv4.1, há algumas dependências externas envolvidas que não eram necessárias para usar o NFSv3 (semelhante a como o SMB requer dependências como o Active Directory).
+
+
+
+=== ACLs do NFSv4.1
+
+O Google Cloud NetApp Volumes oferece suporte para ACLs NFSv4.x, que oferecem vantagens distintas sobre as permissões normais no estilo POSIX, como as seguintes:
+
+* Controle granular do acesso do usuário a arquivos e diretórios
+* Melhor segurança NFS
+* Interoperabilidade aprimorada com CIFS/SMB
+* Remoção da limitação do NFS de 16 grupos por usuário com segurança AUTH_SYS
+* As ACLs ignoram a necessidade de resolução de ID de grupo (GID), o que efetivamente remove o limite de GID. As ACLs do NFSv4.1 são controladas por clientes NFS, não pelo Google Cloud NetApp Volumes.  Para usar ACLs do NFSv4.1, certifique-se de que a versão do software do seu cliente seja compatível com elas e que os utilitários NFS adequados estejam instalados.
+
+
+
+
+=== Compatibilidade entre ACLs NFSv4.1 e clientes SMB
+
+As ACLs do NFSv4 são diferentes das ACLs de nível de arquivo do Windows (ACLs do NTFS), mas têm funcionalidade semelhante.  No entanto, em ambientes NAS multiprotocolo, se as ACLs NFSv4.1 estiverem presentes e você estiver usando acesso de protocolo duplo (NFS e SMB nos mesmos conjuntos de dados), os clientes que usam SMB2.0 e versões posteriores não poderão visualizar ou gerenciar ACLs nas guias de segurança do Windows.
+
+
+
+=== Como funcionam as ACLs do NFSv4.1
+
+Para referência, os seguintes termos são definidos:
+
+* *Lista de controle de acesso (ACL).*  Uma lista de entradas de permissões.
+* *Entrada de controle de acesso (ACE).*  Uma entrada de permissão na lista.
+
+
+Quando um cliente define uma ACL NFSv4.1 em um arquivo durante uma operação SETATTR, o Google Cloud NetApp Volumes define essa ACL no objeto, substituindo qualquer ACL existente.  Se não houver ACL em um arquivo, as permissões de modo no arquivo serão calculadas a partir de OWNER@, GROUP@ e EVERYONE@.  Se houver algum bit SUID/SGID/STICKY existente no arquivo, eles não serão afetados.
+
+Quando um cliente obtém uma ACL NFSv4.1 em um arquivo durante uma operação GETATTR, o Google Cloud NetApp Volumes lê a ACL NFSv4.1 associada ao objeto, constrói uma lista de ACEs e retorna a lista ao cliente.  Se o arquivo tiver uma ACL NT ou bits de modo, uma ACL será construída a partir de bits de modo e retornada ao cliente.
+
+O acesso será negado se uma DENY ACE estiver presente na ACL; o acesso será concedido se uma ALLOW ACE existir.  Entretanto, o acesso também será negado se nenhuma das ACEs estiver presente na ACL.
+
+Um descritor de segurança consiste em uma ACL de segurança (SACL) e uma ACL discricionária (DACL).  Quando o NFSv4.1 interopera com o CIFS/SMB, o DACL é mapeado um-para-um com o NFSv4 e o CIFS.  O DACL consiste em ALLOW e DENY ACEs.
+
+Se um básico `chmod` é executado em um arquivo ou pasta com ACLs NFSv4.1 definidas, as ACLs de usuário e grupo existentes são preservadas, mas as ACLs padrão OWNER@, GROUP@, EVERYONE@ são modificadas.
+
+Um cliente que usa ACLs do NFSv4.1 pode definir e visualizar ACLs para arquivos e diretórios no sistema.  Quando um novo arquivo ou subdiretório é criado em um diretório que possui uma ACL, esse objeto herda todas as ACEs na ACL que foram marcadas com o apropriado http://linux.die.net/man/5/nfs4_acl["sinalizadores de herança"^] .
+
+Se um arquivo ou diretório tiver uma ACL NFSv4.1, essa ACL será usada para controlar o acesso, independentemente do protocolo usado para acessar o arquivo ou diretório.
+
+Arquivos e diretórios herdam ACEs de ACLs NFSv4 em diretórios pais (possivelmente com modificações apropriadas), desde que as ACEs tenham sido marcadas com os sinalizadores de herança corretos.
+
+Quando um arquivo ou diretório é criado como resultado de uma solicitação NFSv4, a ACL no arquivo ou diretório resultante depende se a solicitação de criação de arquivo inclui uma ACL ou apenas permissões de acesso a arquivos UNIX padrão.  A ACL também depende se o diretório pai tem uma ACL.
+
+* Se a solicitação incluir uma ACL, essa ACL será usada.
+* Se a solicitação incluir apenas permissões de acesso a arquivos UNIX padrão e o diretório pai não tiver uma ACL, o modo de arquivo do cliente será usado para definir permissões de acesso a arquivos UNIX padrão.
+* Se a solicitação incluir apenas permissões de acesso a arquivos UNIX padrão e o diretório pai tiver uma ACL não herdável, uma ACL padrão com base nos bits de modo passados na solicitação será definida no novo objeto.
+* Se a solicitação incluir apenas permissões de acesso a arquivos UNIX padrão, mas o diretório pai tiver uma ACL, as ACEs na ACL do diretório pai serão herdadas pelo novo arquivo ou diretório, desde que as ACEs tenham sido marcadas com os sinalizadores de herança apropriados.
+
+
+
+
+=== Permissões da ACE
+
+As permissões ACLs do NFSv4.1 usam uma série de valores de letras maiúsculas e minúsculas (como `rxtncy` ) para controlar o acesso.  Para obter mais informações sobre esses valores de letras, consulte https://www.osc.edu/book/export/html/4523["COMO: Usar a ACL do NFSv4"^] .
+
+
+
+=== Comportamento da ACL do NFSv4.1 com umask e herança de ACL
+
+http://linux.die.net/man/5/nfs4_acl["As ACLs do NFSv4 oferecem a capacidade de oferecer herança de ACL"^] . Herança de ACL significa que arquivos ou pastas criados abaixo de objetos com ACLs NFSv4.1 definidos podem herdar as ACLs com base na configuração do http://linux.die.net/man/5/nfs4_acl["Sinalizador de herança ACL"^] .
+
+https://man7.org/linux/man-pages/man2/umask.2.html["Umask"^]é usado para controlar o nível de permissão no qual arquivos e pastas são criados em um diretório sem interação do administrador.  Por padrão, o Google Cloud NetApp Volumes permite que o umask substitua ACLs herdados, o que é o comportamento esperado de acordo com https://datatracker.ietf.org/doc/html/rfc5661["RFC 5661"^] .
+
+
+
+=== Formatação ACL
+
+As ACLs do NFSv4.1 têm formatação específica.  O exemplo a seguir é um conjunto ACE em um arquivo:
+
+....
+A::ldapuser@domain.netapp.com:rwatTnNcCy
+....
+O exemplo anterior segue as diretrizes de formato ACL de:
+
+....
+type:flags:principal:permissions
+....
+Um tipo de `A` significa "permitir".  Os sinalizadores de herança não são definidos neste caso, porque o principal não é um grupo e não inclui herança.  Além disso, como o ACE não é uma entrada de AUDITORIA, não há necessidade de definir sinalizadores de auditoria.  Para obter mais informações sobre ACLs do NFSv4.1, consulte http://linux.die.net/man/5/nfs4_acl["http://linux.die.net/man/5/nfs4_acl"^] .
+
+Se a ACL do NFSv4.1 não estiver definida corretamente (ou uma sequência de nomes não puder ser resolvida pelo cliente e pelo servidor), a ACL poderá não se comportar conforme o esperado, ou a alteração da ACL poderá não ser aplicada e gerar um erro.
+
+Erros de amostra incluem:
+
+....
+Failed setxattr operation: Invalid argument
+Scanning ACE string 'A:: user@rwaDxtTnNcCy' failed.
+....
+
+
+=== NEGAÇÃO explícita
+
+As permissões do NFSv4.1 podem incluir atributos DENY explícitos para PROPRIETÁRIO, GRUPO e TODOS.  Isso ocorre porque as ACLs do NFSv4.1 são negadas por padrão, o que significa que se uma ACL não for explicitamente concedida por uma ACE, ela será negada.  Atributos DENY explícitos substituem quaisquer ACEs de ACESSO, explícitos ou não.
+
+DENY ACEs são definidos com uma tag de atributo de `D` .
+
+No exemplo abaixo, GROUP@ tem todas as permissões de leitura e execução, mas não tem acesso de gravação.
+
+....
+sh-4.1$ nfs4_getfacl /mixed
+A::ldapuser@domain.netapp.com:ratTnNcCy
+A::OWNER@:rwaDxtTnNcCy
+D::OWNER@:
+A:g:GROUP@:rxtncy
+D:g:GROUP@:waDTC
+A::EVERYONE@:rxtncy
+D::EVERYONE@:waDTC
+....
+DENY ACEs devem ser evitadas sempre que possível porque podem ser confusas e complicadas; ALLOW ACLs que não são explicitamente definidas são implicitamente negadas.  Quando DENY ACEs são definidos, os usuários podem ter acesso negado quando esperam que o acesso seja concedido.
+
+O conjunto anterior de ACEs é equivalente a 755 bits de modo, o que significa:
+
+* O proprietário tem todos os direitos.
+* Os grupos têm permissão somente para leitura.
+* Outros somente leram.
+
+
+Entretanto, mesmo que as permissões sejam ajustadas para o equivalente a 775, o acesso pode ser negado devido ao DENY explícito definido em EVERYONE.
+
+
+
+=== Dependências de mapeamento de domínio de ID NFSv4.1
+
+O NFSv4.1 utiliza a lógica de mapeamento de domínio de ID como uma camada de segurança para ajudar a verificar se um usuário que tenta acessar uma montagem NFSv4.1 é realmente quem ele afirma ser.  Nesses casos, o nome de usuário e o nome do grupo provenientes do cliente NFSv4.1 anexam uma sequência de nome e a enviam para a instância do Google Cloud NetApp Volumes .  Se a combinação de nome de usuário/grupo e ID não corresponder, o usuário e/ou grupo será reduzido ao usuário padrão ninguém especificado no `/etc/idmapd.conf` arquivo no cliente.
+
+Esta sequência de ID é um requisito para a adesão adequada às permissões, especialmente quando ACLs NFSv4.1 e/ou Kerberos estão em uso.  Como resultado, dependências do servidor de serviço de nomes, como servidores LDAP, são necessárias para garantir a consistência entre clientes e Google Cloud NetApp Volumes para resolução adequada de identidade de nomes de usuários e grupos.
+
+O Google Cloud NetApp Volumes usa um valor de nome de domínio de ID padrão estático de `defaultv4iddomain.com` .  Os clientes NFS usam como padrão o nome de domínio DNS para suas configurações de nome de domínio de ID, mas você pode ajustar manualmente o nome de domínio de ID em `/etc/idmapd.conf` .
+
+Se o LDAP estiver habilitado no Google Cloud NetApp Volumes, o Google Cloud NetApp Volumes automatizará o domínio do ID NFS para alterar o que está configurado para o domínio de pesquisa no DNS e os clientes não precisarão ser modificados, a menos que usem nomes de pesquisa de domínio DNS diferentes.
+
+Quando o Google Cloud NetApp Volumes consegue resolver um nome de usuário ou nome de grupo em arquivos locais ou LDAP, a sequência de caracteres de domínio é usada e IDs de domínio não correspondentes são compactados para ninguém.  Se o Google Cloud NetApp Volumes não conseguir encontrar um nome de usuário ou nome de grupo em arquivos locais ou LDAP, o valor de ID numérico será usado e o cliente NFS resolverá o nome corretamente (isso é semelhante ao comportamento do NFSv3).
+
+Sem alterar o domínio do ID NFSv4.1 do cliente para corresponder ao que o volume do Google Cloud NetApp Volumes está usando, você verá o seguinte comportamento:
+
+* Usuários e grupos UNIX com entradas locais no Google Cloud NetApp Volumes (como root, conforme definido em usuários e grupos UNIX locais) são compactados para o valor nobody.
+* Usuários e grupos UNIX com entradas no LDAP (se o Google Cloud NetApp Volumes estiver configurado para usar LDAP) serão compactados para ninguém se os domínios DNS forem diferentes entre clientes NFS e o Google Cloud NetApp Volumes.
+* Usuários e grupos UNIX sem entradas locais ou entradas LDAP usam o valor de ID numérico e resolvem para o nome especificado no cliente NFS.  Se não houver nenhum nome no cliente, somente o ID numérico será exibido.
+
+
+A seguir são mostrados os resultados do cenário anterior:
+
+....
+# ls -la /mnt/home/prof1/nfs4/
+total 8
+drwxr-xr-x 2 nobody nobody 4096 Feb  3 12:07 .
+drwxrwxrwx 7 root   root   4096 Feb  3 12:06 ..
+-rw-r--r-- 1   9835   9835    0 Feb  3 12:07 client-user-no-name
+-rw-r--r-- 1 nobody nobody    0 Feb  3 12:07 ldap-user-file
+-rw-r--r-- 1 nobody nobody    0 Feb  3 12:06 root-user-file
+....
+Quando os domínios de ID do cliente e do servidor correspondem, a mesma listagem de arquivos fica assim:
+
+....
+# ls -la
+total 8
+drwxr-xr-x 2 root   root         4096 Feb  3 12:07 .
+drwxrwxrwx 7 root   root         4096 Feb  3 12:06 ..
+-rw-r--r-- 1   9835         9835    0 Feb  3 12:07 client-user-no-name
+-rw-r--r-- 1 apache apache-group    0 Feb  3 12:07 ldap-user-file
+-rw-r--r-- 1 root   root            0 Feb  3 12:06 root-user-file
+....
+Para obter mais informações sobre esse problema e como resolvê-lo, consulte a seção "<<NFSv4.1 e o usuário/grupo nobody>> ."
+
+
+
+=== Dependências do Kerberos
+
+Se você planeja usar o Kerberos com NFS, deverá ter o seguinte com o Google Cloud NetApp Volumes:
+
+* Domínio do Active Directory para serviços do Kerberos Distribution Center (KDC)
+* Domínio do Active Directory com atributos de usuário e grupo preenchidos com informações do UNIX para funcionalidade LDAP (o NFS Kerberos no Google Cloud NetApp Volumes requer um SPN de usuário para mapeamento de usuário do UNIX para funcionalidade adequada).
+* LDAP habilitado na instância do Google Cloud NetApp Volumes
+* Domínio do Active Directory para serviços DNS
+
+
+
+
+=== NFSv4.1 e o usuário/grupo nobody
+
+Um dos problemas mais comuns observados com uma configuração NFSv4.1 é quando um arquivo ou pasta é mostrado em uma lista usando `ls` como sendo propriedade do `user:group` combinação de `nobody:nobody` .
+
+Por exemplo:
+
+....
+sh-4.2$ ls -la | grep prof1-file
+-rw-r--r-- 1 nobody nobody    0 Apr 24 13:25 prof1-file
+....
+E o ID numérico é `99` .
+
+....
+sh-4.2$ ls -lan | grep prof1-file
+-rw-r--r-- 1 99 99    0 Apr 24 13:25 prof1-file
+....
+Em alguns casos, o arquivo pode mostrar o proprietário correto, mas `nobody` como o grupo.
+
+....
+sh-4.2$ ls -la | grep newfile1
+-rw-r--r-- 1 prof1  nobody    0 Oct  9  2019 newfile1
+....
+Quem é ninguém?
+
+O `nobody` usuário no NFSv4.1 é diferente do `nfsnobody` usuário.  Você pode visualizar como um cliente NFS vê cada usuário executando o `id` comando:
+
+....
+# id nobody
+uid=99(nobody) gid=99(nobody) groups=99(nobody)
+# id nfsnobody
+uid=65534(nfsnobody) gid=65534(nfsnobody) groups=65534(nfsnobody)
+....
+Com o NFSv4.1, o `nobody` usuário é o usuário padrão definido pelo `idmapd.conf` arquivo e pode ser definido como qualquer usuário que você queira usar.
+
+....
+# cat /etc/idmapd.conf | grep nobody
+#Nobody-User = nobody
+#Nobody-Group = nobody
+....
+Por que isso acontece?
+
+Como a segurança por meio do mapeamento de sequências de nomes é um princípio fundamental das operações do NFSv4.1, o comportamento padrão quando uma sequência de nomes não corresponde corretamente é restringir esse usuário a um que normalmente não terá acesso a arquivos e pastas pertencentes a usuários e grupos.
+
+Quando você vê `nobody` para o usuário e/ou grupo nas listagens de arquivos, isso geralmente significa que algo no NFSv4.1 está mal configurado.  A diferenciação entre maiúsculas e minúsculas pode ser importante aqui.
+
+Por exemplo, se user1@CVSDEMO.LOCAL (uid 1234, gid 1234) estiver acessando uma exportação, o Google Cloud NetApp Volumes deverá conseguir encontrar user1@CVSDEMO.LOCAL (uid 1234, gid 1234).  Se o usuário no Google Cloud NetApp Volumes for USER1@CVSDEMO.LOCAL, não haverá correspondência (USER1 maiúsculo versus user1 minúsculo).  Em muitos casos, você pode ver o seguinte no arquivo de mensagens no cliente:
+
+....
+May 19 13:14:29 centos7 nfsidmap[17481]: nss_getpwnam: name 'root@defaultv4iddomain.com' does not map into domain 'CVSDEMO.LOCAL'
+May 19 13:15:05 centos7 nfsidmap[17534]: nss_getpwnam: name 'nobody' does not map into domain 'CVSDEMO.LOCAL'
+....
+O cliente e o servidor devem concordar que um usuário é realmente quem ele afirma ser, então você deve verificar o seguinte para garantir que o usuário que o cliente vê tenha as mesmas informações que o usuário que o Google Cloud NetApp Volumes vê.
+
+* *ID de domínio NFSv4.x.*  Cliente: `idmapd.conf` arquivo; O Google Cloud NetApp Volumes usa `defaultv4iddomain.com` e não pode ser alterado manualmente.  Se estiver usando LDAP com NFSv4.1, o Google Cloud NetApp Volumes altera o domínio de ID para o que o domínio de pesquisa de DNS está usando, que é o mesmo que o domínio do AD.
+* *Nome de usuário e IDs numéricos.*  Isso determina onde o cliente está procurando por nomes de usuário e aproveita a configuração do switch de serviço de nomes — cliente: `nsswitch.conf` e/ou arquivos de senha e grupo locais; o Google Cloud NetApp Volumes não permite modificações nisso, mas adiciona automaticamente o LDAP à configuração quando ele é ativado.
+* *Nome do grupo e IDs numéricos.*  Isso determina onde o cliente está procurando por nomes de grupos e aproveita a configuração do switch de serviço de nomes — cliente: `nsswitch.conf` e/ou arquivos de senha e grupo locais; o Google Cloud NetApp Volumes não permite modificações nisso, mas adiciona automaticamente o LDAP à configuração quando ele é ativado.
+
+
+Em quase todos os casos, se você ver `nobody` nas listagens de usuários e grupos de clientes, o problema é a tradução do ID de domínio do nome do usuário ou grupo entre o Google Cloud NetApp Volumes e o cliente NFS.  Para evitar esse cenário, use o LDAP para resolver informações de usuários e grupos entre clientes e o Google Cloud NetApp Volumes.
+
+
+
+=== Visualizando sequências de ID de nome para NFSv4.1 em clientes
+
+Se você estiver usando o NFSv4.1, há um mapeamento de nome-string que ocorre durante as operações do NFS, conforme descrito anteriormente.
+
+Além de usar `/var/log/messages` para encontrar um problema com IDs NFSv4, você pode usar o https://man7.org/linux/man-pages/man5/nfsidmap.5.html["nfsidmap -l"^] comando no cliente NFS para visualizar quais nomes de usuários foram mapeados corretamente para o domínio NFSv4.
+
+Por exemplo, esta é a saída do comando depois que um usuário que pode ser encontrado pelo cliente e Google Cloud NetApp Volumes acessa uma montagem NFSv4.x:
+
+....
+# nfsidmap -l
+4 .id_resolver keys found:
+  gid:daemon@CVSDEMO.LOCAL
+  uid:nfs4@CVSDEMO.LOCAL
+  gid:root@CVSDEMO.LOCAL
+  uid:root@CVSDEMO.LOCAL
+....
+Quando um usuário não mapeia corretamente no domínio de ID NFSv4.1 (neste caso, `netapp-user` ) tenta acessar a mesma montagem e toca em um arquivo, eles são atribuídos `nobody:nobody` , como esperado.
+
+....
+# su netapp-user
+sh-4.2$ id
+uid=482600012(netapp-user), 2000(secondary)
+sh-4.2$ cd /mnt/nfs4/
+sh-4.2$ touch newfile
+sh-4.2$ ls -la
+total 16
+drwxrwxrwx  5 root   root   4096 Jan 14 17:13 .
+drwxr-xr-x. 8 root   root     81 Jan 14 10:02 ..
+-rw-r--r--  1 nobody nobody    0 Jan 14 17:13 newfile
+drwxrwxrwx  2 root   root   4096 Jan 13 13:20 qtree1
+drwxrwxrwx  2 root   root   4096 Jan 13 13:13 qtree2
+drwxr-xr-x  2 nfs4   daemon 4096 Jan 11 14:30 testdir
+....
+O `nfsidmap -l` a saída mostra o usuário `pcuser` na exibição, mas não `netapp-user` ; este é o usuário anônimo em nossa regra de política de exportação(`65534` ).
+
+....
+# nfsidmap -l
+6 .id_resolver keys found:
+  gid:pcuser@CVSDEMO.LOCAL
+  uid:pcuser@CVSDEMO.LOCAL
+  gid:daemon@CVSDEMO.LOCAL
+  uid:nfs4@CVSDEMO.LOCAL
+  gid:root@CVSDEMO.LOCAL
+  uid:root@CVSDEMO.LOCAL
+....

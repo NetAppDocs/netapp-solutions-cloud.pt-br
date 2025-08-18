@@ -1,0 +1,99 @@
+---
+sidebar: sidebar 
+permalink: openshift/os-solutions-versions.html 
+keywords: NetApp Solutions, hybrid cloud, container workloads, containers, Red Hat OpenShift, RedHat OpenShift, vmware, ROSA, ACC, Trident Protect, Advanced Cluster Management, ACM, Hub Cluster 
+summary:  
+---
+= Versões de vários componentes usados na validação da solução
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+A solução testa e valida a migração e a proteção centralizada de dados com a plataforma de contêiner OpenShift, OpenShift Advanced Cluster Manager, NetApp ONTAP e NetApp Trident Protect.
+
+Os cenários 1, 2 e 3 da solução foram validados utilizando as versões conforme tabela abaixo:
+
+[cols="25%, 75%"]
+|===
+
+
+| *Componente* | *Versão* 
+
+
+| *VMware* | vSphere Client versão 8.0.0.10200 VMware ESXi, 8.0.0, 20842819 
+
+
+| *Cluster Hub* | OpenShift 4.11.34 
+
+
+| *Clusters de Origem e Destino* | OpenShift 4.12.9 local e na AWS 
+
+
+| * NetApp Trident* | Servidor e Cliente Trident 23.04.0 
+
+
+| * NetApp Trident Protect* | Trident Protect 22.11.0-82 
+
+
+| * NetApp ONTAP* | ONTAP 9.12.1 
+
+
+| *AWS FSx ONTAP* | Único AZ 
+|===
+O cenário 4 da solução foi validado utilizando as versões conforme mostrado na tabela abaixo:
+
+[cols="25%, 75%"]
+|===
+
+
+| *Componente* | *Versão* 
+
+
+| *VMware* | vSphere Client versão 8.0.2.00000 VMware ESXi, 8.0.2, 22380479 
+
+
+| *Cluster Hub* | OpenShift 4.13.13 
+
+
+| *Clusters de Origem e Destino* | OpenShift 4.13.12 local e no Google Cloud 
+
+
+| * NetApp Trident* | Servidor e Cliente Trident 23.07.0 
+
+
+| * NetApp ONTAP* | ONTAP 9.12.1 
+
+
+| * Cloud Volumes ONTAP* | Único AZ, nó único, 9.14.0 
+|===
+O cenário 5 da solução foi validado utilizando as versões conforme mostrado na tabela abaixo:
+
+[cols="25%, 75%"]
+|===
+
+
+| *Componente* | *Versão* 
+
+
+| *VMware* | vSphere Client versão 8.0.2.00000 VMware ESXi, 8.0.2, 22380479 
+
+
+| *Clusters de Origem e Destino* | OpenShift 4.13.25 local e no Azure 
+
+
+| * NetApp Trident* | Servidor e cliente Trident e Astra Control Provisioner 23.10.0 
+
+
+| * NetApp Trident Protect* | Trident Protect 23.10 
+
+
+| * NetApp ONTAP* | ONTAP 9.12.1 
+
+
+| * Cloud Volumes ONTAP* | Único AZ, nó único, 9.14.0 
+|===

@@ -1,0 +1,70 @@
+---
+indexpage:
+  title: Multicloud híbrida NetApp com cargas de trabalho de contêiner Red Hat OpenShift
+  summary: As soluções multicloud híbridas da NetApp com a plataforma de contêiner
+    Red Hat OpenShift são um conjunto de recursos estratégicos e tecnológicos que
+    demonstram a facilidade de orquestrar recursos de proteção e migração de dados
+    para cargas de trabalho de contêiner com estado no local e na nuvem pública.
+  lead: As soluções de multinuvem híbrida da NetApp com a plataforma de contêiner
+    Red Hat OpenShift são um conjunto de recursos estratégicos e tecnológicos que
+    demonstram a facilidade de orquestrar recursos de proteção e migração de dados
+    para cargas de trabalho de contêiner com estado no local e na nuvem pública.
+  tiles:
+  - title: Começar
+    links:
+    - title: Visão geral
+      url: "../openshift/os-solutions-overview.html"
+    - title: Propostas de valor
+      url: "../openshift/os-solutions-value-prop.html"
+    - title: Soluções validadas
+      url: "../openshift/os-solutions-validated.html"
+    - title: Versões validadas
+      url: "../openshift/os-solutions-versions.html"
+    - title: Opções de armazenamento suportadas
+      url: "../openshift/os-solutions-storage-options.html"
+  - title: Cargas de trabalho locais
+    links:
+    - title: Solução local
+      url: "../openshift/os-op-solution.html"
+    - title: Configurar o ambiente
+      url: "../openshift/os-op-setup.html"
+    - title: Proteja dados usando ACC
+      url: "../openshift/os-op-data-protection.html"
+    - title: Migrar dados usando ACC
+      url: "../openshift/os-op-data-migration.html"
+  - title: Cargas de trabalho de nuvem híbrida autogerenciadas
+    links:
+    - title: Visão geral da solução
+      url: "../openshift/os-sm-solution.html"
+    - title: Configurar o ambiente
+      url: "../openshift/os-sm-setup.html"
+    - title: Proteja dados usando ACC
+      url: "../openshift/os-sm-data-protection.html"
+    - title: Migrar dados usando ACC
+      url: "../openshift/os-sm-data-migration.html"
+  - title: Cargas de trabalho de nuvem híbrida gerenciadas pelo provedor
+    links:
+    - title: Solução de nuvem híbrida com componentes gerenciados pelo provedor
+      url: "../openshift/os-pm-solution.html"
+    - title: Configurar o ambiente
+      url: "../openshift/os-pm-setup.html"
+    - title: Proteja dados usando ACS
+      url: "../openshift/os-pm-aws-dp.html"
+    - title: Migrar dados usando BlueXP
+      url: "../openshift/os-pm-aws-data-migration.html"
+    - title: Soluções adicionais
+      url: "../openshift/os-pm-rosa-additional.html"
+  - title: Proteja aplicativos de contêiner com ferramentas de terceiros
+    links:
+    - title: Visão geral
+      url: "../openshift/os-dp-velero-solution.html"
+    - title: Instalar OADP
+      url: "../openshift/os-dp-velero-installation.html"
+    - title: Backup de aplicativos de contêiner usando Velero
+      url: "../openshift/os-dp-velero-backup.html"
+    - title: Restaurar a partir de backup usando Velero
+      url: "../openshift/os-dp-velero-restore.html"
+    - title: Migrar aplicativos
+      url: "../openshift/os-dp-velero-migrate.html"
+    - title: Excluir backups e restaurações
+      url: "../openshift/os-dp-velero-delete.html"

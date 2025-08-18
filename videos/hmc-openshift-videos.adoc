@@ -1,0 +1,42 @@
+---
+sidebar: sidebar 
+permalink: videos/hmc-openshift-videos.html 
+summary: Vídeos e demonstrações apresentando soluções de virtualização de nuvem híbrida com NetApp 
+keywords: hybrid cloud, rosa, fsx ontap, azure vmware, netapp hci, videos, demos 
+---
+= Assista a vídeos sobre soluções multicloud híbridas para Red Hat OpenShift com NetApp
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Explore a abrangente biblioteca de vídeos da NetApp apresentando soluções multicloud híbridas para Red Hat OpenShift com NetApp.  Esta coleção inclui demonstrações de snapshots e restauração para OpenShift na AWS (ROSA) com FSx ONTAP, integração com Trident, failover e fail-back para aplicativos e implantação automatizada do Oracle RAC no FlexPod com Ansible.
+
+
+
+== Snapshots e restauração
+
+.Snapshot/Restauração para aplicativos em clusters do Red Hat OpenShift Service on AWS (ROSA) com armazenamento Amazon FSx ONTAP
+video::36ecf505-5d1d-4e99-a6f8-b11c00341793[panopto,width=360]
+
+
+== Integração de armazenamento
+
+.Integração do FSx ONTAP com o Trident
+video::621ae20d-7567-4bbf-809d-b01200fa7a68[panopto,width=360]
+
+
+== Failover e failback
+
+.Failover e Fail-back de aplicativos no ROSA com FSx ONTAP
+video::e9a07d79-42a1-4480-86be-b01200fa62f5[panopto,width=360]
+
+
+== Automação de soluções
+
+.Implantação automatizada do Oracle 19c RAC no FlexPod com Ansible
+video::VcQMJIRzhoY[youtube,width=360]

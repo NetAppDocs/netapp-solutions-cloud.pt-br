@@ -1,0 +1,27 @@
+---
+sidebar: sidebar 
+permalink: openshift/os-pm-solution.html 
+keywords: NetApp Solutions, redhat OpenShift, red hat OpenShift, redhat openshift container platform, ocp, openshift container platform, Advanced Cluster Management, ACM, Hub Cluster, containers, container workloads, VMware, customer managed storage, ONTAP 
+summary:  
+---
+= Solução NetApp com cargas de trabalho da plataforma Managed Red Hat OpenShift Container
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Os clientes podem ter "nascido na nuvem" ou podem estar em um ponto em sua jornada de modernização em que estão prontos para mover algumas cargas de trabalho selecionadas ou todas as cargas de trabalho de seus data centers para a nuvem.  Eles podem optar por usar contêineres OpenShift gerenciados pelo provedor e armazenamento NetApp gerenciado pelo provedor na nuvem para executar suas cargas de trabalho.  Eles devem planejar e implantar os clusters de contêineres do Managed Red Hat OpenShift na nuvem para um ambiente pronto para produção para suas cargas de trabalho de contêiner.  A NetApp fornece ofertas de armazenamento totalmente gerenciadas para soluções Managed Red Hat em todas as três principais nuvens públicas.
+
+* Amazon FSx for NetApp ONTAP (FSx ONTAP)*
+
+O FSx ONTAP oferece proteção de dados, confiabilidade e flexibilidade para implantações de contêineres na AWS.  O Trident atua como um provisionador de armazenamento dinâmico para consumir o armazenamento persistente FSx ONTAP para aplicativos com estado dos clientes.
+
+Como o ROSA pode ser implantado no modo HA com nós do plano de controle distribuídos em várias zonas de disponibilidade, o FSx ONTAP também pode ser provisionado com a opção Multi-AZ, que fornece alta disponibilidade e proteção contra falhas de AZ.
+
+* Google Cloud NetApp Volumes*
+
+O Red Hat OpenShift Dedicated é uma plataforma de aplicativos totalmente gerenciada que permite que você crie, implante e dimensione aplicativos rapidamente na nuvem híbrida.  O Google Cloud NetApp Volumes fornece volumes persistentes, trazendo o conjunto completo de recursos de gerenciamento de dados empresariais do ONTAP para implantações do OpenShift no Google Cloud.

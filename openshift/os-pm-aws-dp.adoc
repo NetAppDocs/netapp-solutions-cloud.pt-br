@@ -1,0 +1,284 @@
+---
+sidebar: sidebar 
+permalink: openshift/os-pm-aws-dp.html 
+keywords: NetApp Solutions, redhat OpenShift, red hat OpenShift, redhat openshift container platform, ocp, openshift container platform, Advanced Cluster Management, ACM, Hub Cluster, containers, container workloads, VMWare, provider managed storage, ONTAP, AWS FSx ONTAP, Astra Control Service 
+summary:  
+---
+= Proteção de dados
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Esta página mostra as opções de proteção de dados para clusters do Managed Red Hat OpenShift on AWS (ROSA) usando o Astra Control Service.  O Astra Control Service (ACS) fornece uma interface gráfica de usuário fácil de usar com a qual você pode adicionar clusters, definir aplicativos em execução neles e executar atividades de gerenciamento de dados com reconhecimento de aplicativo.  As funções do ACS também podem ser acessadas usando uma API que permite a automação de fluxos de trabalho.
+
+O Astra Control (ACS ou ACC) é alimentado pelo NetApp Trident.  O Trident integra vários tipos de clusters Kubernetes, como Red Hat OpenShift, EKS, AKS, SUSE Rancher, Anthos etc., com vários tipos de armazenamento NetApp ONTAP , como FAS/ AFF, ONTAP Select, CVO, Google Google Cloud NetApp Volumes, Azure NetApp Files e Amazon FSx ONTAP.
+
+Esta seção fornece detalhes para as seguintes opções de proteção de dados usando o ACS:
+
+* Um vídeo mostrando o backup e a restauração de um aplicativo ROSA em execução em uma região e restaurando em outra região.
+* Um vídeo mostrando o Snapshot e a Restauração de um aplicativo ROSA.
+* Detalhes passo a passo da instalação de um cluster ROSA, Amazon FSx ONTAP, usando o NetApp Trident para integração com o backend de armazenamento, instalando um aplicativo postgresql no cluster ROSA, usando o ACS para criar um snapshot do aplicativo e restaurando o aplicativo a partir dele.
+* Um blog mostrando detalhes passo a passo da criação e restauração de um snapshot para um aplicativo MySQL em um cluster ROSA com FSx ONTAP usando ACS.
+
+
+
+
+== Backup/Restauração de backup
+
+O vídeo a seguir mostra o backup de um aplicativo ROSA em execução em uma região e a restauração em outra região.
+
+.FSx NetApp ONTAP para serviço Red Hat OpenShift na AWS
+video::01dd455e-7f5a-421c-b501-b01200fa91fd[panopto]
+
+
+== Snapshot/Restaurar a partir de snapshot
+
+O vídeo a seguir mostra como tirar um snapshot de um aplicativo ROSA e restaurá-lo posteriormente.
+
+.Snapshot/Restauração para aplicativos em clusters do Red Hat OpenShift Service on AWS (ROSA) com armazenamento Amazon FSx ONTAP
+video::36ecf505-5d1d-4e99-a6f8-b11c00341793[panopto]
+
+
+== Blogue
+
+* link:https://community.netapp.com/t5/Tech-ONTAP-Blogs/Using-Astra-Control-Service-for-data-management-of-apps-on-ROSA-clusters-with/ba-p/450903["Usando o Astra Control Service para gerenciamento de dados de aplicativos em clusters ROSA com armazenamento Amazon FSx"]
+
+
+
+
+== Detalhes passo a passo para criar um instantâneo e restaurá-lo
+
+
+
+=== Configuração de pré-requisitos
+
+* link:https://signin.aws.amazon.com/signin?redirect_uri=https://portal.aws.amazon.com/billing/signup/resume&client_id=signup["Conta AWS"]
+* link:https://console.redhat.com/["Conta Red Hat OpenShift"]
+* Usuário IAM comlink:https://www.rosaworkshop.io/rosa/1-account_setup/["permissões apropriadas"] para criar e acessar o cluster ROSA
+* link:https://aws.amazon.com/cli/["CLI da AWS"]
+* link:https://console.redhat.com/openshift/downloads["ROSA CLI"]
+* link:https://console.redhat.com/openshift/downloads["OpenShift CLI"](oc)
+* VPC com sub-redes e gateways e rotas apropriados
+* link:https://docs.openshift.com/rosa/rosa_install_access_delete_clusters/rosa_getting_started_iam/rosa-installing-rosa.html["Cluster ROSA instalado"]para o VPC
+* link:https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/getting-started-step1.html["Amazon FSx ONTAP"]criado na mesma VPC
+* Acesso ao cluster ROSA a partir delink:https://console.redhat.com/openshift/overview["Console de Nuvem Híbrida OpenShift"]
+
+
+
+
+=== Próximos passos
+
+. Crie um usuário administrador e faça login no cluster.
+. Crie um arquivo kubeconfig para o cluster.
+. Instale o Trident no cluster.
+. Crie uma configuração de backend, classe de armazenamento e classe de snapshot usando o provisionador Trident CSI.
+. Implante um aplicativo postgresql no cluster.
+. Crie um banco de dados e adicione um registro.
+. Adicione o cluster ao ACS.
+. Defina a aplicação no ACS.
+. Crie um snapshot usando o ACS.
+. Exclua o banco de dados no aplicativo postgresql.
+. Restaurar a partir de um snapshot usando o ACS.
+. Verifique se seu aplicativo foi restaurado do snapshot.
+
+
+
+
+==== **1. Crie um usuário administrador e faça login no cluster**
+
+Acesse o cluster ROSA criando um usuário administrador com o seguinte comando: (Você precisa criar um usuário administrador somente se não tiver criado um no momento da instalação)
+
+`rosa create admin --cluster=<cluster-name>`
+
+O comando fornecerá uma saída semelhante à seguinte.  Faça login no cluster usando o `oc login` comando fornecido na saída.
+
+image:rhhc-rosa-cluster-admin-create.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+
+NOTE: Você também pode fazer login no cluster usando um token.  Se você já criou um usuário administrador no momento da criação do cluster, poderá efetuar login no cluster pelo console do Red Hat OpenShift Hybrid Cloud com as credenciais de usuário administrador.  Depois clicando no canto superior direito onde aparece o nome do usuário logado, você poderá obter o `oc login` comando (login de token) para a linha de comando.
+
+
+
+==== **2. Crie um arquivo kubeconfig para o cluster**
+
+Siga os procedimentoslink:https://docs.netapp.com/us-en/astra-control-service/get-started/create-kubeconfig.html#create-a-kubeconfig-file-for-red-hat-openshift-service-on-aws-rosa-clusters["aqui"] para criar um arquivo kubeconfig para o cluster ROSA.  Este arquivo kubeconfig será usado mais tarde quando você adicionar o cluster ao ACS.
+
+
+
+==== **3. Instalar o Trident no cluster**
+
+Instale o Trident (versão mais recente) no cluster ROSA.  Para fazer isso, você pode seguir qualquer um dos procedimentos fornecidoslink:https://docs.netapp.com/us-en/trident/trident-get-started/kubernetes-deploy.html["aqui"] .  Para instalar o Trident usando o helm no console do cluster, primeiro crie um projeto chamado Trident.
+
+image:rhhc-trident-project-create.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+Em seguida, na visualização do desenvolvedor, crie um repositório de gráficos do Helm.  Para o campo URL use `'https://netapp.github.io/trident-helm-chart'` .  Em seguida, crie uma versão do leme para o operador do Trident .
+
+image:rhhc-helm-repo-create.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"] image:rhhc-helm-release-create.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+Verifique se todos os pods do Trident estão em execução retornando à visualização do Administrador no console e selecionando os pods no projeto do Trident.
+
+image:rhhc-trident-installed.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+
+
+==== **4. Crie uma configuração de backend, classe de armazenamento e classe de snapshot usando o provisionador Trident CSI**
+
+Use os arquivos yaml mostrados abaixo para criar um objeto de backend trident, um objeto de classe de armazenamento e o objeto Volumesnapshot.  Certifique-se de fornecer as credenciais para o sistema de arquivos Amazon FSx ONTAP que você criou, o LIF de gerenciamento e o nome do vserver do seu sistema de arquivos no yaml de configuração para o backend.  Para obter esses detalhes, acesse o console da AWS para o Amazon FSx , selecione o sistema de arquivos e navegue até a guia Administração.  Além disso, clique em atualizar para definir a senha para o `fsxadmin` usuário.
+
+
+NOTE: Você pode usar a linha de comando para criar os objetos ou criá-los com os arquivos yaml do console da nuvem híbrida.
+
+image:rhhc-fsx-details.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+** Configuração de backend do Trident **
+
+[source, yaml]
+----
+apiVersion: v1
+kind: Secret
+metadata:
+  name: backend-tbc-ontap-nas-secret
+type: Opaque
+stringData:
+  username: fsxadmin
+  password: <password>
+---
+apiVersion: trident.netapp.io/v1
+kind: TridentBackendConfig
+metadata:
+  name: ontap-nas
+spec:
+  version: 1
+  storageDriverName: ontap-nas
+  managementLIF: <management lif>
+  backendName: ontap-nas
+  svm: fsx
+  credentials:
+    name: backend-tbc-ontap-nas-secret
+----
+**Classe de armazenamento**
+
+[source, yaml]
+----
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: ontap-nas
+provisioner: csi.trident.netapp.io
+parameters:
+  backendType: "ontap-nas"
+  media: "ssd"
+  provisioningType: "thin"
+  snapshots: "true"
+allowVolumeExpansion: true
+----
+**aula de instantâneo**
+
+[source, yaml]
+----
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshotClass
+metadata:
+  name: trident-snapshotclass
+driver: csi.trident.netapp.io
+deletionPolicy: Delete
+----
+Verifique se os objetos backend, classe de armazenamento e trident-snapshotclass foram criados emitindo os comandos mostrados abaixo.
+
+image:rhhc-tbc-sc-verify.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+Neste momento, uma modificação importante que você precisa fazer é definir ontap-nas como a classe de armazenamento padrão em vez de gp3 para que o aplicativo postgresql que você implantar posteriormente possa usar a classe de armazenamento padrão.  No console Openshift do seu cluster, em Armazenamento, selecione StorageClasses.  Edite a anotação da classe padrão atual para falsa e adicione a anotação storageclass.kubernetes.io/is-default-class definida como verdadeira para a classe de armazenamento ontap-nas.
+
+image:rhhc-change-default-sc.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+image:rhhc-default-sc.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+
+
+==== **5. Implantar um aplicativo postgresql no cluster**
+
+Você pode implantar o aplicativo a partir da linha de comando da seguinte maneira:
+
+`helm install postgresql bitnami/postgresql -n postgresql --create-namespace`
+
+image:rhhc-postgres-install.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+
+NOTE: Se você não vir os pods do aplicativo em execução, pode haver um erro causado por restrições de contexto de segurança. image:rhhc-scc-error.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"] Corrija o erro editando o `runAsUser` e `fsGroup` campos em `statefuleset.apps/postgresql` objeto com o uid que está na saída do `oc get project` comando conforme mostrado abaixo.image:rhhc-scc-fix.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+O aplicativo postgresql deve estar em execução e usando volumes persistentes apoiados pelo armazenamento Amazon FSx ONTAP .
+
+image:rhhc-postgres-running.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+image:rhhc-postgres-pvc.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+
+
+==== **6. Crie um banco de dados e adicione um registro**
+
+image:rhhc-postgres-db-create.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+
+
+==== **7. Adicione o cluster ao ACS**
+
+Faça login no ACS.  Selecione o cluster e clique em Adicionar.  Selecione outro e carregue ou cole o arquivo kubeconfig.
+
+image:rhhc-acs-add-001.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+Clique em *Avançar* e selecione ontap-nas como a classe de armazenamento padrão para o ACS.  Clique em *Avançar*, revise os detalhes e *Adicione* o cluster.
+
+image:rhhc-acs-add-002.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+
+
+==== **8. Defina a aplicação no ACS**
+
+Defina o aplicativo postgresql no ACS.  Na página inicial, selecione *Aplicativos*, *Definir* e preencha os detalhes apropriados.  Clique em *Avançar* algumas vezes, revise os detalhes e clique em *Definir*.  O aplicativo é adicionado ao ACS.
+
+image:rhhc-acs-add-002.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+
+
+==== **9. Crie um snapshot usando o ACS**
+
+Há muitas maneiras de criar um snapshot no ACS.  Você pode selecionar o aplicativo e criar um instantâneo na página que mostra os detalhes do aplicativo.  Você pode clicar em Criar snapshot para criar um snapshot sob demanda ou configurar uma política de proteção.
+
+Crie um snapshot sob demanda simplesmente clicando em *Criar snapshot*, fornecendo um nome, revisando os detalhes e clicando em *Snapshot*.  O estado do instantâneo muda para Saudável após a conclusão da operação.
+
+image:rhhc-snapshot-create.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+image:rhhc-snapshot-on-demand.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+
+
+==== **10. Excluir o banco de dados no aplicativo postgresql**
+
+Efetue login novamente no postgresql, liste os bancos de dados disponíveis, exclua o que você criou anteriormente e liste novamente para garantir que o banco de dados foi excluído.
+
+image:rhhc-postgres-db-delete.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+
+
+==== **11. Restaurar de um snapshot usando ACS**
+
+Para restaurar o aplicativo a partir de um snapshot, acesse a página inicial da interface do usuário do ACS, selecione o aplicativo e selecione Restaurar.  Você precisa escolher um snapshot ou um backup para restaurar.  (Normalmente, você teria vários criados com base em uma política que você configurou).  Faça as escolhas apropriadas nas próximas telas e clique em *Restaurar*.  O status do aplicativo muda de Restaurando para Disponível após ele ser restaurado do instantâneo.
+
+image:rhhc-app-restore-001.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+image:rhhc-app-restore-002.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+image:rhhc-app-restore-003.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]
+
+
+
+==== **12. Verifique se seu aplicativo foi restaurado a partir do snapshot**
+
+Efetue login no cliente postgresql e agora você deverá ver a tabela e o registro na tabela que você tinha anteriormente.  É isso.  Com apenas um clique, seu aplicativo foi restaurado a um estado anterior.  É assim que facilitamos para nossos clientes com o Astra Control.
+
+image:rhhc-app-restore-verify.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]

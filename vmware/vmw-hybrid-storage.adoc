@@ -1,0 +1,59 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-hybrid-storage.html 
+keywords: NetApp Solutions, amazon, vmc, aws, microsoft azure, avs, azure, google cloud, gcp, gcve, vmware managed cloud, enterprise, hybrid, cloud, cloud volumes ontap, cvo, datastore, fsx, fsx ontap 
+summary:  
+---
+= Opções de armazenamento da NetApp para provedores de nuvem pública
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Explore as opções de armazenamento da NetApp nos três principais hiperescaladores.
+
+[role="tabbed-block"]
+====
+.AWS / VMC
+--
+A AWS oferece suporte ao armazenamento NetApp nas seguintes configurações:
+
+* FSx ONTAP como armazenamento conectado a convidados
+* Cloud Volumes ONTAP (CVO) como armazenamento conectado a convidados
+* FSx ONTAP como um armazenamento de dados NFS suplementar
+
+
+Veja o detalhadolink:aws-guest.html["opções de armazenamento de conexão de convidado para VMC"] .  Veja o detalhadolink:aws-native-nfs-datastore-option.html["opções suplementares de armazenamento de dados NFS para VMC"] .
+
+--
+.Azure / AVS
+--
+O Azure oferece suporte ao armazenamento NetApp nas seguintes configurações:
+
+* Azure NetApp Files (ANF) como armazenamento conectado a convidados
+* Cloud Volumes ONTAP (CVO) como armazenamento conectado a convidados
+* Azure NetApp Files (ANF) como um armazenamento de dados NFS suplementar
+
+
+Veja o detalhadolink:azure-guest.html["opções de armazenamento de conexão de convidado para AVS"] .  Veja o detalhadolink:azure-native-nfs-datastore-option.html["opções suplementares de armazenamento de dados NFS para AVS"] .
+
+--
+.GCP / GCVE
+--
+O Google Cloud oferece suporte ao armazenamento NetApp nas seguintes configurações:
+
+* Cloud Volumes ONTAP (CVO) como armazenamento conectado a convidados
+* Google Cloud NetApp Volumes (NetApp Volumes) como armazenamento conectado a convidados
+* Google Cloud NetApp Volumes (NetApp Volumes) como um armazenamento de dados NFS suplementar
+
+
+Veja o detalhadolink:gcp-guest.html["opções de armazenamento de conexão de convidado para GCVE"] .  Veja o detalhadolink:gcp-ncvs-datastore.html["opções suplementares de armazenamento de dados NFS para GCVE"] .
+
+Leia mais sobrelink:https://www.netapp.com/blog/cloud-volumes-service-google-cloud-vmware-engine/["Suporte ao armazenamento de dados do Google Cloud NetApp Volumes para o Google Cloud VMware Engine (blog da NetApp )"^] oulink:https://cloud.google.com/blog/products/compute/how-to-use-netapp-cvs-as-datastores-with-vmware-engine["Como usar o Google Cloud NetApp Volumes como armazenamento de dados para o Google Cloud VMware Engine (blog do Google)"^]
+
+--
+====
