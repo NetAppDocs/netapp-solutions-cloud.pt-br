@@ -1,0 +1,51 @@
+---
+sidebar: sidebar 
+permalink: vmware/evs-protect-fsxn-setup-sc.html 
+keywords: Amazon, AWS, EVS, Elastic VMware Service, ONTAP, FSx 
+summary: Esta seção aborda os passos para configurar o SnapCenter Plug-in para VMware. 
+---
+= Procedimento de configuração do SnapCenter Plug-in para VMware
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Esta seção aborda os passos para configurar o SnapCenter Plug-in para VMware.
+
+
+
+== Pré-requisitos
+
+Os seguintes pré-requisitos são necessários antes de começar:
+
+. Para registrar o servidor vCenter durante a implantação do OVA, especifique o domínio totalmente qualificado (FQDN) ou o endereço IP do vCenter.
+. Para as credenciais do vCenter, use uma conta com os privilégios mínimos necessários
+. Abra as portas do firewall para acesso ao vCenter Server.
+. Atualize o grupo de segurança da Amazon VPC onde o FSx for ONTAP está em execução para permitir o acesso do SCV ao FSx for ONTAP.
+
+
+
+NOTE: SCV está disponível gratuitamente.
+
+
+
+== Configurando o SnapCenter Plug-in para VMware
+
+Para proteger as VMs e os datastores baseados em NFS/iSCSI que as hospedam, o SCV deve ser implantado. É uma simples importação de OVF.
+
+As etapas para a implementação são as seguintes:
+
+. Baixe o OVA em link:https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/scpivs44_download_the_ova_open_virtual_appliance.html["NetApp site de suporte"].
+. Faça login no Amazon Exchange Virtual Server vCenter.
+. Dentro do vCenter, clique com o botão direito em qualquer objeto do inventário, como um data center, pasta, cluster ou host e selecione "Implantar modelo OVF".
+. Selecione as configurações corretas, incluindo armazenamento, segmento e personalize o modelo para atualizar o vCenter e suas credenciais, criar credenciais SCV e detalhes de endereço IP. Após a revisão, selecione "Concluir".
+. Aguarde as tarefas de importação e implantação do OVF serem concluídas.
+. Assim que o SCV for implantado com sucesso, ele será registrado dentro do vCenter.
+. Para acessar o plug-in, navegue até a barra lateral esquerda da página do cliente web vCenter e selecione "SnapCenter Plug-in for VMware".
+
+
+image:evs-protect-fsxn-001.png["Figura representando o diálogo para a etapa acima"]
