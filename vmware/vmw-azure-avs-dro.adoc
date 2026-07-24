@@ -18,6 +18,7 @@ A recuperação de desastres usando replicação em nível de bloco entre regiõ
 
 
 
+[[overview]]
 == Visão geral
 
 Com a replicação de volume entre regiões do Azure NetApp Files (ANF), as cargas de trabalho do VMware em execução em um site SDDC do Azure VMware Solution (AVS) usando volumes do Azure NetApp Files como um armazenamento de dados NFS no site AVS principal podem ser replicadas para um site AVS secundário designado na região de recuperação de destino.
@@ -28,6 +29,7 @@ image:azure-dro-001.png["Figura mostrando diálogo de entrada/saída ou represen
 
 
 
+[[prerequisites-and-general-recommendations]]
 === Pré-requisitos e recomendações gerais
 
 * Verifique se você habilitou a replicação entre regiões criando o peering de replicação. Ver https://learn.microsoft.com/en-us/azure/azure-netapp-files/cross-region-replication-create-peering["Criar replicação de volume para o Azure NetApp Files"^] .
@@ -42,10 +44,12 @@ NOTE: Topologias em cascata e fan-in e fan-out não são suportadas.
 
 
 
+[[getting-started]]
 == Começando
 
 
 
+[[deploy-azure-vmware-solution]]
 === Implantar a solução Azure VMware
 
 O https://learn.microsoft.com/en-us/azure/azure-vmware/introduction["Solução VMware do Azure"^] (AVS) é um serviço de nuvem híbrida que fornece SDDCs VMware totalmente funcionais dentro de uma nuvem pública do Microsoft Azure.  O AVS é uma solução própria totalmente gerenciada e suportada pela Microsoft e verificada pela VMware que usa a infraestrutura do Azure.  Portanto, os clientes obtêm o VMware ESXi para virtualização de computação, o vSAN para armazenamento hiperconvergente e o NSX para rede e segurança, tudo isso aproveitando a presença global do Microsoft Azure, as instalações de data center líderes da categoria e a proximidade com o rico ecossistema de serviços e soluções nativos do Azure.  Uma combinação do Azure VMware Solution SDDC e do Azure NetApp Files proporciona o melhor desempenho com latência de rede mínima.
@@ -57,6 +61,7 @@ NOTE: Na versão inicial, o DRO oferece suporte a um cluster AVS SDDC existente.
 
 
 
+[[provision-and-configure-azure-netapp-files]]
 === Provisionar e configurar o Azure NetApp Files
 
 https://learn.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-introduction["Azure NetApp Files"^]é um serviço de armazenamento de arquivos medido, de alto desempenho e de nível empresarial.  Siga os passos deste https://learn.microsoft.com/en-us/azure/azure-vmware/attach-azure-netapp-files-to-azure-vmware-solution-hosts?tabs=azure-portal["link"^] para provisionar e configurar o Azure NetApp Files como um armazenamento de dados NFS para otimizar implantações de nuvem privada do AVS.
@@ -76,6 +81,7 @@ NOTE: Um relacionamento de replicação entre regiões é um pré-requisito e de
 
 
 
+[[dro-installation]]
 == Instalação DRO
 
 Para começar a usar o DRO, use o sistema operacional Ubuntu na máquina virtual do Azure designada e certifique-se de atender aos pré-requisitos.  Em seguida, instale o pacote.
@@ -129,6 +135,7 @@ image:azure-dro-003.png["Figura mostrando diálogo de entrada/saída ou represen
 
 
 
+[[dro-configuration]]
 == Configuração DRO
 
 Depois que o Azure NetApp Files e o AVS forem configurados corretamente, você poderá começar a configurar o DRO para automatizar a recuperação de cargas de trabalho do site AVS principal para o site AVS secundário.  A NetApp recomenda implantar o agente DRO no site AVS secundário e configurar a conexão do gateway ExpressRoute para que o agente DRO possa se comunicar pela rede com os componentes AVS e Azure NetApp Files apropriados.
@@ -202,6 +209,7 @@ A próxima etapa é agrupar as VMs necessárias em seus grupos funcionais como g
 
 
 
+[[resource-groupings]]
 === Agrupamentos de recursos
 
 Depois que as plataformas forem adicionadas, agrupe as VMs que você deseja recuperar em grupos de recursos.  Os grupos de recursos de DRO permitem que você agrupe um conjunto de VMs dependentes em grupos lógicos que contêm suas ordens de inicialização, atrasos de inicialização e validações de aplicativos opcionais que podem ser executadas na recuperação.
@@ -233,6 +241,7 @@ image:azure-dro-011.png["Figura mostrando diálogo de entrada/saída ou represen
 
 
 
+[[replication-plans]]
 === Planos de replicação
 
 Você deve ter um plano para recuperar aplicativos em caso de desastre.  Selecione as plataformas vCenter de origem e destino no menu suspenso, escolha os grupos de recursos a serem incluídos neste plano e inclua também o agrupamento de como os aplicativos devem ser restaurados e ligados (por exemplo, controladores de domínio, nível 1, nível 2 e assim por diante).  Os planos também são frequentemente chamados de projetos.  Para definir o plano de recuperação, navegue até a guia Plano de Replicação e clique em *Novo Plano de Replicação*.
@@ -298,6 +307,7 @@ No portal do Azure, podemos ver que a integridade da replicação foi interrompi
 
 
 
+[[ransomware-recovery]]
 === Recuperação de ransomware
 
 Recuperar-se de um ransomware pode ser uma tarefa assustadora.  Especificamente, pode ser difícil para organizações de TI identificar qual é o ponto de retorno seguro e, uma vez determinado, como garantir que as cargas de trabalho recuperadas estejam protegidas contra ataques recorrentes (por exemplo, de malware inativo ou por meio de aplicativos vulneráveis).
@@ -306,6 +316,7 @@ O DRO aborda essas preocupações permitindo que as organizações se recuperem 
 
 
 
+[[conclusion]]
 == Conclusão
 
 A solução de recuperação de desastres do Azure NetApp Files e do Azure VMware oferece os seguintes benefícios:
@@ -322,6 +333,7 @@ A solução de recuperação de desastres do Azure NetApp Files e do Azure VMwar
 
 
 
+[[where-to-find-additional-information]]
 === Onde encontrar informações adicionais
 
 Para saber mais sobre as informações descritas neste documento, revise os seguintes documentos e/ou sites:

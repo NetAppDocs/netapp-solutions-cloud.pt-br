@@ -18,6 +18,7 @@ A integração do Amazon FSx ONTAP com o VMware Cloud on AWS é um armazenamento
 
 
 
+[[overview]]
 == Visão geral
 
 Para os clientes que buscam usar o VMware Cloud on AWS SDDC como destino de recuperação de desastres, os datastores FSx ONTAP podem ser usados para replicar dados locais usando qualquer solução de terceiros validada que forneça capacidade de replicação de VM.  Ao adicionar o datastore FSx ONTAP , será possível uma implantação com custo otimizado em vez de construir o VMware Cloud no AWS SDDC com uma quantidade enorme de hosts ESXi apenas para acomodar o armazenamento.
@@ -26,6 +27,7 @@ Essa abordagem também ajuda os clientes a usar o cluster de luz piloto no VMC j
 
 
 
+[[problem-statement]]
 == Declaração do Problema
 
 Este documento descreve como usar o armazenamento de dados FSx ONTAP e o Veeam Backup and Replication para configurar a recuperação de desastres para VMs VMware locais para o VMware Cloud na AWS usando a funcionalidade de replicação de VM.
@@ -42,10 +44,12 @@ image:dr-veeam-fsx-001.png["Diagrama de cenário de DR usando Veeam Replication 
 
 
 
+[[solution-deployment]]
 == Implantação de solução
 
 
 
+[[high-level-steps]]
 === Degraus altos
 
 . O software Veeam Backup and Replication está sendo executado em um ambiente local com conectividade de rede apropriada.
@@ -57,6 +61,7 @@ image:dr-veeam-fsx-001.png["Diagrama de cenário de DR usando Veeam Replication 
 
 
 
+[[pre-requisites-for-veeam-vm-replication-to-vmc-and-fsx-ontap-datastores]]
 === Pré-requisitos para replicação de VM Veeam para datastores VMC e FSx ONTAP
 
 . Certifique-se de que a VM de backup do Veeam Backup & Replication esteja conectada ao vCenter de origem, bem como aos clusters SDDC de destino do VMware Cloud on AWS.
@@ -68,6 +73,7 @@ Para obter informações adicionais, consulte “Considerações e Limitações�
 
 
 
+[[deployment-details]]
 === Detalhes da implantação
 
 .Etapa 1: replicar VMs
@@ -217,6 +223,7 @@ image:dr-veeam-fsx-019.png["Figura mostrando diálogo de entrada/saída ou repre
 ====
 
 
+[[conclusion]]
 == Conclusão
 
 O recurso de armazenamento de dados FSx ONTAP permite que a Veeam ou qualquer ferramenta de terceiros validada forneça uma solução de DR de baixo custo usando o cluster Pilot Light e sem criar um grande número de hosts no cluster apenas para acomodar a cópia da réplica da VM.  Isso fornece uma solução poderosa para lidar com um plano de recuperação de desastres personalizado e personalizado e também permite reutilizar produtos de backup existentes internamente para atender às necessidades de DR, permitindo assim a recuperação de desastres baseada em nuvem ao sair dos data centers de DR locais.  O failover pode ser feito como failover planejado ou failover com o clique de um botão quando ocorre um desastre e é tomada a decisão de ativar o site de DR.

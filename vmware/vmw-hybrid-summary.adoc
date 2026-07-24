@@ -18,6 +18,7 @@ O NetApp Cloud Volumes, juntamente com as soluções VMware para os principais h
 
 
 
+[[use-case-1-optimizing-storage]]
 == Caso de uso nº 1: Otimização do armazenamento
 
 Ao executar um exercício de dimensionamento usando a saída do RVtools, fica sempre evidente que a escala de potência (vCPU/vMem) é paralela ao armazenamento.  Muitas vezes, as organizações se encontram em uma situação em que o espaço de armazenamento exige um tamanho de cluster muito maior do que o necessário em termos de potência.
@@ -26,6 +27,7 @@ Ao integrar o NetApp Cloud Volumes, as organizações podem obter uma solução 
 
 
 
+[[use-case-2-cloud-migration]]
 == Caso de uso nº 2: Migração para a nuvem
 
 As organizações estão sob pressão para migrar aplicativos de data centers locais para a Nuvem Pública por vários motivos: uma expiração de concessão próxima; uma diretriz financeira para migrar gastos de capital (capex) para gastos operacionais (opex); ou simplesmente uma ordem de cima para baixo para mover tudo para a nuvem.
@@ -34,12 +36,14 @@ Quando a velocidade é crítica, somente uma abordagem de migração simplificad
 
 
 
+[[use-case-3-data-center-expansion]]
 == Caso de uso nº 3: Expansão do data center
 
 Quando um data center atinge limites de capacidade devido a picos sazonais de demanda ou apenas ao crescimento orgânico constante, migrar para o VMware hospedado na nuvem junto com o NetApp Cloud Volumes é uma solução fácil.  O aproveitamento do NetApp Cloud Volumes permite a criação, replicação e expansão de armazenamento com muita facilidade, fornecendo alta disponibilidade em zonas de disponibilidade e recursos de dimensionamento dinâmico.  Aproveitar o NetApp Cloud Volumes ajuda a minimizar a capacidade do cluster do host, superando a necessidade de clusters estendidos.
 
 
 
+[[use-case-4-disaster-recovery-to-the-cloud]]
 == Caso de uso nº 4: Recuperação de desastres para a nuvem
 
 Em uma abordagem tradicional, se ocorrer um desastre, as VMs replicadas para a nuvem precisarão ser convertidas para a plataforma de hipervisor da própria nuvem antes que possam ser restauradas — uma tarefa que não deve ser realizada durante uma crise.
@@ -48,12 +52,14 @@ Ao usar o NetApp Cloud Volumes para armazenamento conectado a convidados usando 
 
 
 
+[[use-case-5-application-modernization]]
 == Caso de uso nº 5: Modernização de aplicativos
 
 Depois que os aplicativos estiverem na nuvem pública, as organizações desejarão aproveitar as centenas de serviços de nuvem poderosos para modernizá-los e estendê-los.  Com o uso do NetApp Cloud Volumes, a modernização é um processo fácil porque os dados do aplicativo não ficam bloqueados no vSAN e permitem a mobilidade de dados para uma ampla variedade de casos de uso, incluindo o Kubernetes.
 
 
 
+[[conclusion]]
 == Conclusão
 
 Não importa se você tem como alvo uma nuvem híbrida ou totalmente em nuvem, o NetApp Cloud Volumes oferece excelentes opções para implantar e gerenciar cargas de trabalho de aplicativos, juntamente com serviços de arquivo e protocolos de bloco, ao mesmo tempo em que reduz o TCO ao tornar os requisitos de dados integrados à camada de aplicativo.

@@ -20,24 +20,28 @@ Os fatores que levam os clientes a migrarem para a nuvem podem incluir elasticid
 
 
 
+[[vmware-cloud-options-in-public-cloud]]
 == Opções do VMware Cloud na Nuvem Pública
 
 Esta seção descreve como cada um dos provedores de nuvem oferece suporte a uma pilha VMware Software Defined Data Center (SDDC) e/ou VMware Cloud Foundation (VCF) em suas respectivas ofertas de nuvem pública.
 
 
 
+[[azure-vmware-solution]]
 === Solução VMware do Azure
 
 O Azure VMware Solution é um serviço de nuvem híbrida que permite SDDCs VMware totalmente funcionais dentro da nuvem pública do Microsoft Azure.  O Azure VMware Solution é uma solução primária totalmente gerenciada e suportada pela Microsoft, verificada pela VMware e que aproveita a infraestrutura do Azure.  Isso significa que, quando o Azure VMware Solution é implantado, os clientes obtêm o ESXi da VMware para virtualização de computação, o vSAN para armazenamento hiperconvergente e o NSX para rede e segurança, tudo isso aproveitando a presença global do Microsoft Azure, as instalações de data center líderes da categoria e a proximidade com o rico ecossistema de serviços e soluções nativos do Azure.
 
 
 
+[[vmware-cloud-on-aws]]
 === VMware Cloud na AWS
 
 O VMware Cloud on AWS traz o software SDDC de nível empresarial da VMware para a AWS Cloud com acesso otimizado aos serviços nativos da AWS.  Com a tecnologia VMware Cloud Foundation, o VMware Cloud on AWS integra os produtos de computação, armazenamento e virtualização de rede da VMware (VMware vSphere, VMware vSAN e VMware NSX) juntamente com o gerenciamento do VMware vCenter Server, otimizado para execução em infraestrutura AWS dedicada, elástica e bare-metal.
 
 
 
+[[google-cloud-vmware-engine]]
 === Google Cloud VMware Engine
 
 O Google Cloud VMware Engine é uma oferta de infraestrutura como serviço (IaaS) desenvolvida com base na infraestrutura escalável de alto desempenho do Google Cloud e na pilha VMware Cloud Foundation – VMware vSphere, vCenter, vSAN e NSX-T. Este serviço permite um caminho rápido para a nuvem, migrando ou estendendo cargas de trabalho VMware existentes de ambientes locais para o Google Cloud Platform sem o custo, esforço ou risco de rearquitetar aplicativos ou reestruturar operações.  É um serviço vendido e suportado pelo Google, trabalhando em estreita colaboração com a VMware.
@@ -47,6 +51,7 @@ NOTE: A nuvem privada SDDC e a colocation do NetApp Cloud Volumes oferecem o mel
 
 
 
+[[did-you-know]]
 == Você sabia?
 
 Independentemente da nuvem usada, quando um SDDC da VMware é implantado, o cluster inicial inclui os seguintes produtos:
@@ -58,6 +63,7 @@ Independentemente da nuvem usada, quando um SDDC da VMware é implantado, o clus
 
 
 
+[[storage-configuration]]
 == Configuração de armazenamento
 
 Para clientes que planejam hospedar cargas de trabalho com uso intensivo de armazenamento e escalar em qualquer solução VMware hospedada na nuvem, a infraestrutura hiperconvergente padrão determina que a expansão deve ocorrer nos recursos de computação e armazenamento.
@@ -66,6 +72,7 @@ Ao integrar com o NetApp Cloud Volumes, como Azure NetApp Files, Amazon FSx ONTA
 
 
 
+[[notes]]
 === Observações:
 
 * A VMware não recomenda configurações de cluster desbalanceadas, portanto, expandir o armazenamento significa adicionar mais hosts, o que implica em mais TCO.
@@ -100,6 +107,7 @@ NOTE: O armazenamento no local era a única opção disponível no momento em qu
 
 
 
+[[points-to-remember]]
 === Pontos a serem lembrados
 
 * Em modelos de armazenamento híbrido, coloque cargas de trabalho de nível 1 ou de alta prioridade no armazenamento de dados vSAN para atender a quaisquer requisitos de latência específicos, porque elas fazem parte do próprio host e estão próximas.  Use mecanismos no convidado para quaisquer VMs de carga de trabalho para as quais latências transacionais sejam aceitáveis.
@@ -114,6 +122,7 @@ NOTE: Isso se aplica somente ao armazenamento conectado por convidado.
 
 
 
+[[benefits-of-netapp-cloud-storage]]
 == Benefícios do armazenamento em nuvem da NetApp
 
 O armazenamento em nuvem da NetApp oferece os seguintes benefícios:
@@ -131,6 +140,7 @@ O armazenamento em nuvem da NetApp oferece os seguintes benefícios:
 
 
 
+[[assumptions]]
 == Suposições
 
 * A tecnologia SnapMirror ou outros mecanismos relevantes de migração de dados estão habilitados.  Há muitas opções de conectividade, desde locais até qualquer nuvem hiperescalável.  Use o caminho apropriado e trabalhe com as equipes de rede relevantes.
@@ -142,6 +152,7 @@ NOTE: Contrate arquitetos de soluções da NetApp e os respectivos arquitetos de
 
 
 
+[[detailed-architecture]]
 == Arquitetura detalhada
 
 De uma perspectiva de alto nível, esta arquitetura (mostrada na figura abaixo) aborda como obter conectividade multicloud híbrida e portabilidade de aplicativos entre vários provedores de nuvem usando o NetApp Cloud Volumes ONTAP, o Google Cloud NetApp Volumes para Google Cloud e o Azure NetApp Files como uma opção adicional de armazenamento no convidado.

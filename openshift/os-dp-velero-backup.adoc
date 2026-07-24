@@ -18,6 +18,7 @@ Esta seção descreve como criar backup sob demanda para VMs no OpenShift Virtua
 
 
 
+[[steps-to-create-a-backup-of-an-app]]
 == Etapas para criar um backup de um aplicativo
 
 Para criar um backup sob demanda de um aplicativo (metadados do aplicativo e volumes persistentes do aplicativo), clique na guia **Backup** para criar um Recurso Personalizado de Backup (CR).  Um exemplo de yaml é fornecido para criar o Backup CR.  Usando este yaml, o aplicativo e seu armazenamento persistente no namespace especificado serão feitos backup.  Parâmetros adicionais podem ser definidos conforme mostrado nalink:https://docs.openshift.com/container-platform/4.14/backup_and_restore/application_backup_and_restore/backing_up_and_restoring/oadp-creating-backup-cr.html["documentação"] .
@@ -48,6 +49,7 @@ image:redhat-openshift-oadp-backup-002.png["Objetos de backup no S3"]
 
 
 
+[[creating-scheduled-backups-for-apps]]
 == Criação de backups agendados para aplicativos
 
 Para criar backups agendados, você precisa criar uma CR agendada.  O agendamento é simplesmente uma expressão Cron que permite que você especifique o horário em que deseja criar o backup.  Um exemplo de yaml para criar um Schedule CR é mostrado abaixo.

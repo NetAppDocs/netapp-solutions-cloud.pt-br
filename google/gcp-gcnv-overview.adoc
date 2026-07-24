@@ -20,6 +20,7 @@ A segurança, principalmente na nuvem, onde a infraestrutura está fora do contr
 
 
 
+[[intended-audience]]
 == Público-alvo
 
 O público-alvo deste documento inclui, mas não está limitado às seguintes funções:

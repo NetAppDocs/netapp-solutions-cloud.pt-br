@@ -18,6 +18,7 @@ Neste documento, fornecemos orientações detalhadas passo a passo sobre como im
 
 
 
+[[conclusion]]
 == Conclusão
 
 Em resumo, ao usar FSx for ONTAP para otimizar o TCO em uma implantação do Amazon EVS, o SCV oferece um método simples e eficiente para fazer backup de máquinas virtuais. Ele pode fazer backup e restaurar máquinas virtuais de maneira rápida e integrada, pois depende de cópias Snapshot, que levam literalmente segundos para serem concluídas.

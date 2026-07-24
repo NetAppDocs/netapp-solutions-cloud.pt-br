@@ -18,6 +18,7 @@ Este documento descreve como montar o Amazon FSx ONTAP como um armazenamento de 
 
 
 
+[[introduction]]
 == Introdução
 
 Toda organização bem-sucedida está em um caminho de transformação e modernização.  Como parte desse processo, as empresas normalmente usam seus investimentos existentes na VMware para aproveitar os benefícios da nuvem e explorar como migrar, expandir, estender e fornecer recuperação de desastres para processos da maneira mais perfeita possível.  Os clientes que migram para a nuvem devem avaliar os casos de uso para elasticidade e pico, saída do data center, consolidação do data center, cenários de fim de vida, fusões, aquisições e assim por diante.
@@ -33,6 +34,7 @@ NOTE: Esta solução também está disponível na VMware.  Por favor, visite oli
 
 
 
+[[connectivity-options]]
 == Opções de conectividade
 
 
@@ -58,6 +60,7 @@ NOTE: O FSx ONTAP não é atualmente suportado com clusters estendidos.
 
 
 
+[[conclusion]]
 == Conclusão
 
 Este documento aborda as etapas necessárias para configurar o Amazon FSx ONTAP com o VMware Cloud na AWS.  O Amazon FSx ONTAP oferece excelentes opções para implantar e gerenciar cargas de trabalho de aplicativos juntamente com serviços de arquivo, ao mesmo tempo em que reduz o TCO ao tornar os requisitos de dados integrados à camada de aplicativo.  Seja qual for o caso de uso, escolha o VMware Cloud on AWS junto com o Amazon FSx ONTAP para rápida concretização dos benefícios da nuvem, infraestrutura consistente e operações do local para a AWS, portabilidade bidirecional de cargas de trabalho e capacidade e desempenho de nível empresarial.  É o mesmo processo e procedimento familiar usado para conectar o armazenamento.  Lembre-se de que foi apenas a posição dos dados que mudou junto com os novos nomes; as ferramentas e os processos permanecem os mesmos, e o Amazon FSx ONTAP ajuda a otimizar a implantação geral.

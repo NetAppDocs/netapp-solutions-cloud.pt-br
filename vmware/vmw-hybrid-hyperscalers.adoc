@@ -32,6 +32,8 @@ Vá para a seção do conteúdo desejado selecionando entre as seguintes opçõe
 
 
 
+[[vmware-in-the-hyperscalers-configuration]]
+[[config]]
 == VMware na configuração de hiperescaladores
 
 Assim como no local, planejar um ambiente de virtualização baseado em nuvem é essencial para um ambiente de produção bem-sucedido, pronto para criação de VMs e migração.
@@ -90,6 +92,8 @@ Veja o detalhadolink:../vmware/vmw-gcp-gcve-setup.html["etapas de configuração
 ====
 
 
+[[netapp-storage-options]]
+[[datastore]]
 == Opções de armazenamento da NetApp
 
 O armazenamento NetApp pode ser utilizado de diversas maneiras — como convidado conectado ou como um armazenamento de dados NFS suplementar — dentro de cada um dos três principais hiperescaladores.
@@ -139,6 +143,8 @@ Leia mais sobrelink:https://www.netapp.com/blog/cloud-volumes-service-google-clo
 ====
 
 
+[[netapp-vmware-cloud-solutions]]
+[[solutions]]
 == Soluções de nuvem NetApp /VMware
 
 Com as soluções de nuvem da NetApp e da VMware, muitos casos de uso são simples de implantar no hiperescalador de sua escolha.  A VMware define os principais casos de uso de carga de trabalho na nuvem como:

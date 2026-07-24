@@ -18,6 +18,7 @@ O armazenamento NetApp pode ser anexado ao Azure VMware Service como armazenamen
 
 
 
+[[azure-netapp-files-anf-as-a-supplemental-nfs-datastore]]
 == Azure NetApp Files (ANF) como um armazenamento de dados NFS suplementar
 
 O suporte ao armazenamento de dados NFS foi introduzido com o ESXi versão 3 em implantações locais, o que ampliou muito os recursos de armazenamento do vSphere.
@@ -34,6 +35,7 @@ Para mais informações sobre o ANF como um armazenamento de dados NFS suplement
 
 
 
+[[azure-netapp-files-anf-as-guest-connected-storage]]
 == Azure NetApp Files (ANF) como armazenamento conectado a convidados
 
 O Azure NetApp Files traz gerenciamento e armazenamento de dados de nível empresarial para o Azure para que você possa gerenciar suas cargas de trabalho e aplicativos com facilidade.  Migre suas cargas de trabalho para a nuvem e execute-as sem sacrificar o desempenho.
@@ -46,6 +48,7 @@ Para mais informações, visitelink:vmw-azure-avs-guest-storage.html#anf["ANF co
 
 
 
+[[cloud-volumes-ontap-cvo-as-guest-connected-storage]]
 == Cloud Volumes ONTAP (CVO) como armazenamento conectado a convidados
 
 O Cloud Volumes ONTAP (CVO) é a solução de gerenciamento de dados em nuvem líder do setor, desenvolvida no software de armazenamento ONTAP da NetApp, disponível nativamente na Amazon Web Services (AWS), Microsoft Azure e Google Cloud Platform (GCP).

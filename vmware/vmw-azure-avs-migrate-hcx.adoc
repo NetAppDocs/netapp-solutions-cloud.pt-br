@@ -18,6 +18,7 @@ Um dos casos de uso mais comuns para o Azure VMware Solution e o armazenamento d
 
 
 
+[[overview-migrating-virtual-machines-with-vmware-hcx-azure-netapp-files-datastores-and-azure-vmware-solution]]
 == Visão geral: Migrando máquinas virtuais com VMware HCX, repositórios de dados do Azure NetApp Files e solução Azure VMware
 
 O VMware HCX é principalmente uma plataforma de migração projetada para simplificar a migração de aplicativos, o rebalanceamento de carga de trabalho e até mesmo a continuidade dos negócios entre nuvens.  Ele está incluído como parte do Azure VMware Solution Private Cloud e oferece muitas maneiras de migrar cargas de trabalho e pode ser usado para operações de recuperação de desastres (DR).
@@ -69,6 +70,7 @@ image:anfd-hcx-001.png["Esta imagem descreve a arquitetura de alto nível usada 
 ====
 
 
+[[solution-deployment]]
 == Implantação de solução
 
 Siga a série de etapas para concluir a implantação desta solução:
@@ -315,12 +317,14 @@ NOTE: O armazenamento de dados ANF de destino deve ter espaço suficiente para l
 ====
 
 
+[[conclusion]]
 == Conclusão
 
 Não importa se você tem como alvo a nuvem híbrida ou totalmente em nuvem e dados residindo em qualquer tipo/fornecedor de armazenamento no local, o Azure NetApp Files e o HCX oferecem excelentes opções para implantar e migrar as cargas de trabalho do aplicativo, ao mesmo tempo em que reduzem o TCO ao tornar os requisitos de dados integrados à camada do aplicativo.  Seja qual for o caso de uso, escolha o Azure VMware Solution juntamente com o Azure NetApp Files para rápida concretização dos benefícios da nuvem, infraestrutura consistente e operações em nuvens locais e múltiplas, portabilidade bidirecional de cargas de trabalho e capacidade e desempenho de nível empresarial.  É o mesmo processo e procedimento familiar usado para conectar o armazenamento e migrar VMs usando VMware vSphere Replication, VMware vMotion ou até mesmo cópia de arquivo de rede (NFC).
 
 
 
+[[takeaways]]
 == Takeaways
 
 Os pontos principais deste documento incluem:
@@ -332,6 +336,7 @@ Os pontos principais deste documento incluem:
 
 
 
+[[where-to-find-additional-information]]
 == Onde encontrar informações adicionais
 
 Para saber mais sobre as informações descritas neste documento, consulte os seguintes links do site:

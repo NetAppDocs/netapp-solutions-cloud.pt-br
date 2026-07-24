@@ -18,6 +18,7 @@ Esta seção descreve como restaurar aplicativos de um backup.
 
 
 
+[[prerequisites]]
 == Pré-requisitos
 
 Para restaurar a partir de um backup, vamos supor que o namespace onde o aplicativo existia foi excluído acidentalmente.

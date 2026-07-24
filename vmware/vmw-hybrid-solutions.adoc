@@ -18,6 +18,7 @@ Saiba mais sobre as soluções que a NetApp oferece ao ambiente VMware em cada u
 
 
 
+[[netapp-solutions-for-vmware-environments]]
 == Soluções NetApp para ambientes VMware
 
 Não importa se você opera em um modelo de nuvem híbrida ou em um modelo "nuvem primeiro", a NetApp oferece uma ampla variedade de soluções para atender aos casos de uso mais comuns de gerenciamento de cargas de trabalho em um modelo de nuvem ou nuvem híbrida.

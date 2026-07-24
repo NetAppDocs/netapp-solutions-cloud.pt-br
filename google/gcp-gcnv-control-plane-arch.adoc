@@ -18,12 +18,14 @@ Todas as ações de gerenciamento do Google Cloud NetApp Volumes são feitas por
 
 
 
+[[identity-and-access-management]]
 == Gerenciamento de Identidade e Acesso
 
 Gerenciamento de Identidade e Acesso(https://cloud.google.com/iam/docs/overview["EU SOU"^] ) é um serviço padrão que permite controlar a autenticação (logins) e a autorização (permissões) para instâncias de projetos do Google Cloud.  O Google IAM fornece uma trilha de auditoria completa de autorização e remoção de permissões.  Atualmente, o Google Cloud NetApp Volumes não fornece auditoria de plano de controle.
 
 
 
+[[authorizationpermission-overview]]
 === Visão geral de autorização/permissão
 
 O IAM oferece permissões granulares integradas para o Google Cloud NetApp Volumes.  Você pode encontrar um https://cloud.google.com/architecture/partners/netapp-cloud-volumes/security-considerations?hl=en_US["lista completa de permissões granulares aqui"^] .
@@ -41,6 +43,7 @@ Exemplos de uso de permissões granulares incluem o seguinte:
 
 
 
+[[service-accounts]]
 === Contas de serviço
 
 Para fazer chamadas de API do Google Cloud NetApp Volumes por meio de scripts ou https://registry.terraform.io/providers/NetApp/netapp-gcp/latest/docs["Terraform"^] , você deve criar uma conta de serviço com o `roles/netappcloudvolumes.admin` papel.  Você pode usar esta conta de serviço para gerar os tokens JWT necessários para autenticar solicitações da API do Google Cloud NetApp Volumes de duas maneiras diferentes:
@@ -53,6 +56,7 @@ Ver https://cloud.google.com/architecture/partners/netapp-cloud-volumes/api?hl=e
 
 
 
+[[google-cloud-netapp-volumes-api]]
 == API de Google Cloud NetApp Volumes
 
 A API do Google Cloud NetApp Volumes usa uma API baseada em REST usando HTTPS (TLSv1.2) como transporte de rede subjacente.  Você pode encontrar a definição de API mais recente https://cloudvolumesgcp-api.netapp.com/swagger.json["aqui"^] e informações sobre como usar a API em https://cloud.google.com/architecture/partners/netapp-cloud-volumes/api?hl=en_US["APIs do Cloud Volumes na documentação do Google Cloud"^] .
@@ -61,12 +65,14 @@ O ponto de extremidade da API é operado e protegido pela NetApp usando a funcio
 
 
 
+[[jwt-tokens]]
 === Tokens JWT
 
 A autenticação na API é realizada com tokens portadores JWT(https://datatracker.ietf.org/doc/html/rfc7519["RFC-7519"^] ).  Tokens JWT válidos devem ser obtidos usando a autenticação do Google Cloud IAM.  Isso deve ser feito buscando um token do IAM, fornecendo uma chave JSON da conta de serviço.
 
 
 
+[[audit-logging]]
 == Registro de auditoria
 
 Atualmente, não há logs de auditoria de plano de controle acessíveis ao usuário disponíveis.

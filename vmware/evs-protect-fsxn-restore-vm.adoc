@@ -18,6 +18,7 @@ Esta seção aborda os passos para restaurar VMs a partir de backups. O SCV pode
 
 
 
+[[steps-to-perform-restore-operation]]
 == Etapas para realizar a operação de restauração
 
 Para realizar a operação de restauração, siga estes passos:
@@ -54,6 +55,7 @@ NOTE: A operação de restauração também pode ser acionada a partir do nível
 
 
 
+[[steps-to-restore-a-deleted-vm]]
 == Passos para restaurar uma máquina virtual excluída
 
 Restaurar uma máquina virtual excluída é um processo simples com SCV.

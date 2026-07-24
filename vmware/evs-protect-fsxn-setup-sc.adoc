@@ -18,6 +18,7 @@ Esta seção aborda os passos para configurar o SnapCenter Plug-in para VMware.
 
 
 
+[[prerequisites]]
 == Pré-requisitos
 
 Os seguintes pré-requisitos são necessários antes de começar:
@@ -33,6 +34,7 @@ NOTE: SCV está disponível gratuitamente.
 
 
 
+[[setting-up-the-snapcenter-plug-in-for-vmware]]
 == Configurando o SnapCenter Plug-in para VMware
 
 Para proteger as VMs e os datastores baseados em NFS/iSCSI que as hospedam, o SCV deve ser implantado. É uma simples importação de OVF.

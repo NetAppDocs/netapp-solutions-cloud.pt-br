@@ -18,6 +18,7 @@ O armazenamento NetApp pode ser anexado ao Amazon Web Services como armazenament
 
 
 
+[[amazon-fsx-for-netapp-ontap-fsx-ontap-as-a-supplemental-nfs-datastore]]
 == Amazon FSx for NetApp ONTAP (FSx ONTAP) como um armazenamento de dados NFS suplementar
 
 O Amazon FSx ONTAP oferece excelentes opções para implantar e gerenciar cargas de trabalho de aplicativos juntamente com serviços de arquivo, ao mesmo tempo em que reduz o TCO ao tornar os requisitos de dados integrados à camada de aplicativo.  Seja qual for o caso de uso, escolha o VMware Cloud on AWS junto com o Amazon FSx ONTAP para rápida concretização dos benefícios da nuvem, infraestrutura consistente e operações do local para a AWS, portabilidade bidirecional de cargas de trabalho e capacidade e desempenho de nível empresarial.  É o mesmo processo e procedimento familiar usado para conectar o armazenamento.
@@ -30,6 +31,7 @@ Para mais informações, visite:
 
 
 
+[[amazon-fsx-for-netapp-ontap-as-guest-connected-storage]]
 == Amazon FSx for NetApp ONTAP como armazenamento conectado a convidados
 
 O Amazon FSx ONTAP é um serviço totalmente gerenciado que fornece armazenamento de arquivos altamente confiável, escalável, de alto desempenho e rico em recursos, criado no popular sistema de arquivos ONTAP da NetApp.  O FSx ONTAP combina os recursos familiares, o desempenho, as capacidades e as operações de API dos sistemas de arquivos NetApp com a agilidade, a escalabilidade e a simplicidade de um serviço AWS totalmente gerenciado.
@@ -44,6 +46,7 @@ Para mais informações, visitelink:vmw-aws-vmc-guest-storage.html#fsx-ontap["FS
 
 
 
+[[cloud-volumes-ontap-cvo-as-guest-connected-storage]]
 == Cloud Volumes ONTAP (CVO) como armazenamento conectado a convidados
 
 O Cloud Volumes ONTAP, ou CVO, é a solução de gerenciamento de dados em nuvem líder do setor, desenvolvida no software de armazenamento ONTAP da NetApp, disponível nativamente na Amazon Web Services (AWS), Microsoft Azure e Google Cloud Platform (GCP).

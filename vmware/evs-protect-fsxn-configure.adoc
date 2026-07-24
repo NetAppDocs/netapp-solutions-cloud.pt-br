@@ -18,6 +18,7 @@ Esta seção aborda as etapas para configurar o SnapCenter Plug-in for VMware. A
 
 
 
+[[adding-the-storage-system]]
 == Adicionando o sistema de storage
 
 O próximo passo na proteção de cargas de trabalho com o SVC é adicionar o link:https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/scpivs44_add_storage_01.html["sistema de storage"]. Adicionar armazenamento permite que o SCV detecte e gerencie operações de backup e restauração dentro do vCenter. Inclua o endpoint de gerenciamento do FSx for NetApp ONTAP ou o endereço IP do endpoint de administração da máquina virtual de armazenamento (SVM) como um sistema de storage para habilitar o backup e a restauração de máquinas virtuais.
@@ -37,6 +38,7 @@ Se a versão do SCV for 6.2, acesse link:https://mysupport.netapp.com/site/produ
 
 
 
+[[create-a-backup-policy]]
 == Criar uma política de backup
 
 Uma estratégia de backup robusta deve definir fatores-chave como a programação de backup, os dados a serem copiados e o período de retenção dos backups. Cópias Snapshot podem ser agendadas em intervalos de hora em hora ou diariamente para proteger datastores inteiros. Agendar backups dessa forma não só protege os datastores, mas também suporta as operações de backup e restauração das VMs e VMDKs contidos nesses datastores.
@@ -69,6 +71,7 @@ Após a criação da política, o próximo passo é criar o grupo de recursos qu
 
 
 
+[[create-a-resource-group]]
 == Criar um grupo de recursos
 
 Um grupo de recursos serve como um contêiner para máquinas virtuais e datastores que precisam de proteção. Recursos podem ser adicionados ou removidos de um grupo de recursos a qualquer momento, proporcionando flexibilidade no gerenciamento das configurações de backup.
@@ -92,6 +95,7 @@ image:evs-protect-fsxn-005.png["Figura representando o diálogo para a etapa aci
 
 
 
+[[backing-up-resource-groups]]
 == Backup de grupos de recursos
 
 As operações de backup são executadas em todos os recursos definidos dentro de um grupo de recursos. Se um grupo de recursos tiver uma política associada e um agendamento configurado, os backups ocorrem automaticamente de acordo com o agendamento.

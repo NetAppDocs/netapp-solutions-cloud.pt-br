@@ -18,6 +18,7 @@ Este documento apresentará etapas detalhadas para criar um FSx para sistema de 
 
 
 
+[[introduction]]
 == Introdução
 
 Organizações com investimentos existentes em VMware local que buscam maneiras eficientes e econômicas de modernizar suas implantações migrando, distribuindo, estendendo ou protegendo (backup, recuperação de desastres) cópias na AWS enfrentaram vários desafios.  Com o lançamento do Amazon Elastic VMware Service (Amazon EVS), agora há um serviço nativo da AWS que possibilita executar o VMware Cloud Foundation (VCF) diretamente em uma Amazon Virtual Private Cloud (VPC).
@@ -30,24 +31,28 @@ Para resolver esse problema, a AWS e a NetApp oferecem o Amazon FSx for NetApp O
 
 
 
+[[overview]]
 == Visão geral
 
 Este documento apresentará etapas detalhadas para criar um FSx para sistema de arquivos ONTAP e anexá-lo para uso como um armazenamento de dados de interface de sistema de computadores pequenos da Internet (iSCSI) ou de sistema de arquivos de rede (NFS) para uso com o Amazon EVS.
 
 
 
+[[purpose-of-this-guide]]
 == Objetivo deste Guia
 
 Este guia fornece instruções sobre como configurar um armazenamento de dados FSx for ONTAP para o Amazon EVS, bem como práticas recomendadas, requisitos de suporte, considerações de dimensionamento e outras informações para ajudar você a planejar, projetar e implementar a integração.
 
 
 
+[[audience]]
 == Público
 
 Este tutorial é destinado a arquitetos e administradores de nuvem familiarizados com VMware vSphere, Amazon EVS, AWS Console e FSx for ONTAP.
 
 
 
+[[high-level-architecture]]
 == Arquitetura de alto nível
 
 Nesta seção, daremos uma visão geral da arquitetura da solução para usar o FSx for ONTAP como um armazenamento de dados para o Amazon EVS.

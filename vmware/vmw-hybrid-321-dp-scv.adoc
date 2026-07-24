@@ -18,6 +18,7 @@ A estratégia de backup 3-2-1 é um método de proteção de dados aceito pelo s
 
 
 
+[[overview]]
 == Visão geral
 
 A estratégia é composta por três regras fundamentais:
@@ -31,6 +32,7 @@ Este documento de solução abrange uma solução de backups 3-2-1 usando o Snap
 
 
 
+[[use-cases]]
 === Casos de uso
 
 Esta solução aborda os seguintes casos de uso:
@@ -41,6 +43,7 @@ Esta solução aborda os seguintes casos de uso:
 
 
 
+[[netapp-ontap-data-storage]]
 === Armazenamento de dados NetApp ONTAP
 
 ONTAP é a solução de armazenamento líder do setor da NetApp que oferece armazenamento unificado, independentemente de você acessar por meio de protocolos SAN ou NAS.  A estratégia de backup 3-2-1 garante que os dados locais sejam protegidos em mais de um tipo de mídia, e a NetApp oferece plataformas que vão desde flash de alta velocidade até mídia de baixo custo.
@@ -51,6 +54,7 @@ Para obter mais informações sobre todas as plataformas de hardware da NetApp, 
 
 
 
+[[snapcenter-plug-in-for-vmware-vsphere]]
 === SnapCenter Plug-in for VMware vSphere
 
 O SnapCenter Plugin para VMware vSphere é uma oferta de proteção de dados totalmente integrada ao VMware vSphere e permite fácil gerenciamento de backup e restaurações para máquinas virtuais.  Como parte dessa solução, o SnapMirror fornece um método rápido e confiável para criar uma segunda cópia de backup imutável de dados de máquina virtual em um cluster de armazenamento ONTAP secundário.  Com essa arquitetura em vigor, as operações de restauração da máquina virtual podem ser facilmente iniciadas a partir dos locais de backup primário ou secundário.
@@ -61,6 +65,7 @@ Para obter informações detalhadas sobre SCV, consulte https://docs.netapp.com/
 
 
 
+[[bluexp-backup-and-recovery-for-virtual-machines]]
 === BlueXP backup and recovery para máquinas virtuais
 
 O BlueXP backup and recovery é uma ferramenta baseada em nuvem para gerenciamento de dados que fornece um único plano de controle para uma ampla gama de operações de backup e recuperação em ambientes locais e na nuvem.  Parte do pacote de BlueXP backup and recovery do NetApp BlueXP é um recurso que se integra ao SnapCenter Plugin para VMware vSphere (local) para estender uma cópia dos dados para o armazenamento de objetos na nuvem.  Isso estabelece uma terceira cópia dos dados fora do local, originada dos backups de armazenamento primário ou secundário.  O BlueXP backup and recovery facilitam a configuração de políticas de armazenamento que transferem cópias dos seus dados de qualquer um desses dois locais locais.
@@ -126,6 +131,7 @@ O objetivo desta solução é demonstrar a proteção de dados de máquinas virt
 ====
 
 
+[[high-level-architecture]]
 == Arquitetura de Alto Nível
 
 O teste/validação desta solução foi realizado em um laboratório que pode ou não corresponder ao ambiente de implantação final.
@@ -134,6 +140,7 @@ image:bxp-scv-hybrid-004.png["Diagrama de Arquitetura da Solução"]
 
 
 
+[[solution-deployment]]
 == Implantação de solução
 
 Nesta solução, fornecemos instruções detalhadas para implantar e validar uma solução que utiliza o SnapCenter Plug-in for VMware vSphere, juntamente com o BlueXP backup and recovery, para executar o backup e a recuperação de máquinas virtuais Windows e Linux em um cluster VMware vSphere localizado em um data center local.  As máquinas virtuais nesta configuração são armazenadas em datastores NFS hospedados por um cluster de armazenamento ONTAP A300.  Além disso, um cluster de armazenamento ONTAP A300 separado serve como destino secundário para volumes replicados usando o SnapMirror.  Além disso, o armazenamento de objetos hospedado no Amazon Web Services e no Azure Blob foram empregados como alvos para uma terceira cópia dos dados.
@@ -146,6 +153,7 @@ Para obter informações detalhadas sobre BlueXP backup and recovery, consulte o
 
 
 
+[[establish-snapmirror-relationships-between-ontap-clusters]]
 === Estabelecer relacionamentos SnapMirror entre clusters ONTAP
 
 O SnapCenter Plug-in for VMware vSphere usa a tecnologia ONTAP SnapMirror para gerenciar o transporte de cópias secundárias do SnapMirror e/ou SnapVault para um cluster ONTAP secundário.
@@ -359,6 +367,7 @@ ONTAP-Dest::> snapmirror initialize -destination-path DestSVM:DestVol
 ====
 
 
+[[configure-the-snapcenter-plug-in-for-vmware-vsphere]]
 === Configurar o SnapCenter Plug-in for VMware vSphere
 
 Uma vez instalado, o SnapCenter Plug-in for VMware vSphere pode ser acessado na interface de gerenciamento de dispositivos do vCenter Server.  O SCV gerenciará backups para os armazenamentos de dados NFS montados nos hosts ESXi e que contêm as VMs Windows e Linux.
@@ -478,6 +487,7 @@ image:bxp-scv-hybrid-015.png["Monitorar o progresso do trabalho"]
 ====
 
 
+[[configure-backups-to-object-storage-in-bluexp-backup-and-recovery]]
 === Configurar backups para armazenamento de objetos no BlueXP backup and recovery
 
 Para que o BlueXP gerencie a infraestrutura de dados de forma eficaz, é necessária a instalação prévia de um Conector.  O Conector executa as ações envolvidas na descoberta de recursos e no gerenciamento de operações de dados.
@@ -606,6 +616,7 @@ NOTE: Neste ponto, a transferência de dados pode não começar imediatamente.  
 ====
 
 
+[[restoring-virtual-machines-in-the-case-of-data-loss]]
 === Restauração de máquinas virtuais em caso de perda de dados
 
 Garantir a proteção dos seus dados é apenas um aspecto da proteção abrangente de dados.  Igualmente crucial é a capacidade de restaurar dados prontamente de qualquer local em caso de perda de dados ou ataque de ransomware.  Esse recurso é essencial para manter operações comerciais contínuas e atingir objetivos de ponto de recuperação.
@@ -681,6 +692,7 @@ image:bxp-scv-hybrid-039.png["Revisar restauração da guia Monitoramento de tar
 ====
 
 
+[[conclusion]]
 == Conclusão
 
 A estratégia de backup 3-2-1, quando implementada com o SnapCenter Plug-in for VMware vSphere e o BlueXP backup and recovery para máquinas virtuais, oferece uma solução robusta, confiável e econômica para proteção de dados.  Essa estratégia não apenas garante redundância e acessibilidade de dados, mas também oferece a flexibilidade de restaurar dados de qualquer local e de sistemas de armazenamento ONTAP locais e armazenamento de objetos baseado em nuvem.
@@ -689,6 +701,7 @@ O caso de uso apresentado nesta documentação se concentra em tecnologias compr
 
 
 
+[[additional-information]]
 == Informações adicionais
 
 Para saber mais sobre as tecnologias apresentadas nesta solução, consulte as seguintes informações adicionais.

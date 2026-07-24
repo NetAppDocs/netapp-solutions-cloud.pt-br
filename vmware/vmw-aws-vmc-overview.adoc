@@ -25,6 +25,8 @@ Vá para a seção do conteúdo desejado selecionando entre as seguintes opçõe
 
 
 
+[[configuring-vmc-in-aws]]
+[[config]]
 == Configurando o VMC na AWS
 
 Assim como no local, planejar um ambiente de virtualização baseado em nuvem é essencial para um ambiente de produção bem-sucedido, pronto para criação de VMs e migração.
@@ -44,6 +46,8 @@ Veja o detalhadolink:../vmware/vmw-aws-vmc-setup.html["etapas de configuração 
 
 
 
+[[netapp-storage-options-for-vmc]]
+[[datastore]]
 == Opções de armazenamento NetApp para VMC
 
 O armazenamento NetApp pode ser utilizado de diversas maneiras — como um repositório de dados conectado ou como um repositório de dados NFS suplementar — dentro do AWS VMC.
@@ -61,6 +65,8 @@ Veja o detalhadolink:../vmware/vmw-aws-vmc-guest-storage.html["opções de armaz
 
 
 
+[[solution-use-cases]]
+[[solutions]]
 == Casos de uso da solução
 
 Com as soluções de nuvem da NetApp e da VMware, muitos casos de uso são simples de implantar no seu AWS VMC.  Os casos de uso são definidos para cada uma das áreas de nuvem definidas pela VMware:

@@ -18,6 +18,7 @@ Esta seção mostrará as etapas sobre como implantar o FSx para ONTAP como um a
 
 
 
+[[high-level-deployment-steps]]
 == Etapas de implantação de alto nível
 
 A implantação do sistema de arquivos FSx para ONTAP para uso como um armazenamento de dados NFS para o Amazon EVS e o estabelecimento de conectividade entre os dois serviços incluirão as seguintes etapas:
@@ -29,6 +30,7 @@ A implantação do sistema de arquivos FSx para ONTAP para uso como um armazenam
 
 
 
+[[prerequisites]]
 == Pré-requisitos
 
 Os seguintes pré-requisitos devem estar em vigor antes de você iniciar o processo de configuração de um FSx para ONTAP como um armazenamento de dados NFS para o Amazon EVS:
@@ -49,6 +51,7 @@ NOTE: Seu sistema de arquivos FSx para ONTAP deve ser implantado na mesma AZ que
 
 
 
+[[create-an-fsx-for-ontap-file-system]]
 == Crie um FSx para o sistema de arquivos ONTAP
 
 As etapas a seguir mostrarão como provisionar e montar um FSx para o sistema de arquivos ONTAP :
@@ -154,6 +157,7 @@ NOTE: Para criar FSx adicionais para sistemas de arquivos ONTAP , você pode seg
 
 
 
+[[validating-vpc-and-virtualization-environment-routing-and-security-groups]]
 == Validando grupos de roteamento e segurança de VPC e ambiente de virtualização
 
 Validar os grupos de roteamento e segurança do VPC e do SDDC é importante para garantir que o ambiente de virtualização do Amazon EVS e os componentes do sistema de arquivos FSx for ONTAP possam funcionar juntos corretamente.
@@ -207,6 +211,7 @@ image:evs-mount-fsxn-017.png["Figura representando o diálogo para a etapa acima
 
 
 
+[[attaching-an-fsx-for-ontap-nfs-volume-to-amazon-evs-for-use-as-a-datastore]]
 == Anexando um volume FSx para ONTAP NFS ao Amazon EVS para uso como um armazenamento de dados
 
 Agora que seu sistema de arquivos FSx para ONTAP foi provisionado e todos os parâmetros de conectividade adequados foram validados, é hora de anexar um volume de armazenamento FSx para ONTAP ao Amazon EVS.  As etapas a seguir mostrarão como acessar o vCenter e montar o volume FSx para ONTAP como um armazenamento de dados NFS:

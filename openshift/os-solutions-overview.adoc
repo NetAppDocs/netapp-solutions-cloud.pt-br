@@ -18,6 +18,7 @@ A NetApp está observando um aumento significativo de clientes modernizando seus
 
 
 
+[[overview]]
 == Visão geral
 
 À medida que mais e mais clientes começam a adotar contêineres em suas empresas, a NetApp está perfeitamente posicionada para ajudar a atender às necessidades de armazenamento persistente de seus aplicativos com estado e às necessidades clássicas de gerenciamento de dados, como proteção de dados, segurança de dados e migração de dados.  No entanto, essas necessidades são atendidas por meio de diferentes estratégias, ferramentas e métodos.

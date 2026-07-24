@@ -22,6 +22,7 @@ Com o VMware vSphere, as ferramentas NetApp ONTAP fornecem um plug-in vCenter qu
 
 
 
+[[data-protection-and-migration-solution-for-openshift-container-workloads-using-trident-protect]]
 == Solução de proteção e migração de dados para cargas de trabalho de contêiner OpenShift usando Trident Protect
 
 image:rhhc-on-premises.png["Figura mostrando diálogo de entrada/saída ou representando conteúdo escrito"]

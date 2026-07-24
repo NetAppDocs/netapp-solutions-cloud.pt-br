@@ -37,6 +37,7 @@ NOTE: Entre em contato com a Azure e a NetApp Solution Architects para planejar 
 
 
 
+[[detailed-architecture]]
 == Arquitetura detalhada
 
 De uma perspectiva de alto nível, esta arquitetura descreve como obter conectividade de nuvem híbrida e portabilidade de aplicativos em ambientes locais e no Azure.  Ele também descreve o uso do Azure NetApp Files como um armazenamento de dados NFS suplementar e como uma opção de armazenamento no convidado para máquinas virtuais convidadas hospedadas na solução Azure VMware.
@@ -45,6 +46,7 @@ image:vmware-dr-001.png["Figura mostrando diálogo de entrada/saída ou represen
 
 
 
+[[sizing]]
 == Dimensionamento
 
 O aspecto mais importante na migração ou recuperação de desastres é determinar o tamanho correto para o ambiente de destino.  É muito importante entender quantos nós são necessários para acomodar um exercício de elevação e transferência do local para a Solução VMware no Azure.
@@ -64,6 +66,7 @@ NOTE: As VMs convidadas usadas com armazenamento no convidado devem ser calculad
 
 
 
+[[deploying-and-configuring-azure-vmware-solution]]
 == Implantando e configurando a solução Azure VMware
 
 Assim como no local, planejar uma solução Azure VMware é essencial para um ambiente de produção bem-sucedido, pronto para criação de máquinas virtuais e migração.
@@ -79,6 +82,7 @@ O processo de configuração pode ser dividido em três partes:
 
 
 
+[[configure-azure-netapp-files-with-azure-vmware-solution]]
 == Configurar o Azure NetApp Files com a Solução VMware no Azure
 
 A nova integração entre o Azure NetApp Files permite que você crie datastores NFS por meio das APIs/CLI do provedor de recursos do Azure VMware Solution com volumes do Azure NetApp Files e monte os datastores nos clusters de sua escolha em uma nuvem privada.  Além de abrigar os VMDKs de VM e aplicativo, os volumes de arquivo do Azure NetApp também podem ser montados a partir de VMs criadas no ambiente SDDC do Azure VMware Solution.  Os volumes podem ser montados no cliente Linux e mapeados em um cliente Windows, porque o Azure NetApp Files oferece suporte aos protocolos Server Message Block (SMB) e Network File System (NFS).
@@ -217,6 +221,7 @@ image:vmware-dr-005.png["Figura mostrando diálogo de entrada/saída ou represen
 ====
 
 
+[[sizing-and-performance-optimization]]
 == Dimensionamento e otimização de desempenho
 
 O Azure NetApp Files oferece suporte a três níveis de serviço: Standard (16 MBps por terabyte), Premium (64 MBps por terabyte) e Ultra (128 MBps por terabyte). Provisionar o tamanho correto do volume é importante para o desempenho ideal da carga de trabalho do banco de dados. Com o Azure NetApp Files, o desempenho do volume e o limite de taxa de transferência são determinados com base nos seguintes fatores:
@@ -244,6 +249,7 @@ Consulte istolink:https://learn.microsoft.com/en-us/azure/azure-netapp-files/per
 |===
 
 
+[[performance-considerations]]
 == Considerações de desempenho
 
 É importante entender que com o NFS versão 3 há apenas um pipe ativo para a conexão entre o host ESXi e um único destino de armazenamento.  Isso significa que, embora possa haver conexões alternativas disponíveis para failover, a largura de banda de um único armazenamento de dados e o armazenamento subjacente são limitados ao que uma única conexão pode fornecer.
@@ -268,6 +274,7 @@ Consulte istolink:https://learn.microsoft.com/en-us/azure/azure-netapp-files/per
 |===
 
 
+[[increasing-the-size-of-the-datastore]]
 == Aumentando o tamanho do armazenamento de dados
 
 A remodelação de volume e as mudanças dinâmicas no nível de serviço são completamente transparentes para o SDDC.  No Azure NetApp Files, esses recursos fornecem otimizações contínuas de desempenho, capacidade e custo.  Aumente o tamanho dos armazenamentos de dados NFS redimensionando o volume do Portal do Azure ou usando a CLI.  Depois de terminar, acesse o vCenter, vá para a guia armazenamento de dados, clique com o botão direito do mouse no armazenamento de dados apropriado e selecione Atualizar informações de capacidade.  Essa abordagem pode ser usada para aumentar a capacidade do armazenamento de dados e aumentar o desempenho do armazenamento de dados de forma dinâmica e sem tempo de inatividade.  Esse processo também é completamente transparente para os aplicativos.
@@ -284,6 +291,7 @@ A remodelação de volume e as mudanças dinâmicas no nível de serviço são c
 |===
 
 
+[[workloads]]
 == Cargas de trabalho
 
 .Migração
