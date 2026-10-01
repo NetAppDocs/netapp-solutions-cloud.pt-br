@@ -28,7 +28,7 @@ Trident Protect permite snapshots, backups, restaurações e recuperação de de
 
 * link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.17/html/installing_on_bare_metal/index["Cluster OpenShift 4.17"]
 * link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.17/html/virtualization/getting-started#tours-quick-starts_virt-getting-started["OpenShift Virtualization instalado via OpenShift Virtualization Operator fornecido pela Red Hat"]
-* link:https://docs.netapp.com/us-en/trident/trident-get-started/kubernetes-deploy.html["Trident 25.02"]
+* link:https://docs.netapp.com/us-en/trident/trident-install/kubernetes-deploy.html["Trident 25.02"]
 * link:https://docs.netapp.com/us-en/trident/trident-protect/trident-protect-installation.html["Trident Protect 25.02"]
 * link:https://docs.netapp.com/us-en/ontap/["ONTAP 9.16"]
 

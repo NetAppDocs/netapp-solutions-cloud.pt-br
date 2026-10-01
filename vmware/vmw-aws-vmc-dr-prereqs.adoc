@@ -682,7 +682,7 @@ O servidor SnapCenter e o servidor Veeam Backup & Replication podem ser instalad
 .Servidor SnapCenter
 [%collapsible%open]
 =====
-O SnapCenter software está disponível no site de suporte da NetApp e pode ser instalado em sistemas Microsoft Windows que residam em um Domínio ou Grupo de Trabalho.  Um guia de planejamento detalhado e instruções de instalação podem ser encontrados emlink:https://docs.netapp.com/us-en/snapcenter/install/install_workflow.html["Centro de documentação da NetApp"^] .
+O SnapCenter software está disponível no site de suporte da NetApp e pode ser instalado em sistemas Microsoft Windows que estejam em um domínio ou grupo de trabalho. Um guia de planejamento detalhado e instruções de instalação podem ser encontrados no link:https://docs.netapp.com/["Centro de documentação da NetApp"^].
 
 O SnapCenter software pode ser encontrado em https://mysupport.netapp.com["este link"^] .
 

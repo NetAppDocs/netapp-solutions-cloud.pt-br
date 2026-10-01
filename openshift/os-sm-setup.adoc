@@ -57,7 +57,7 @@ NOTE: O conector também pode ser instalado no ambiente de nuvem.  Referirlink:h
 .Instalar o Trident no cluster OCP
 [%collapsible%open]
 ====
-* Implante o Trident Operator usando o Helm.  Consulte as instruçõeslink:https://docs.netapp.com/us-en/trident/trident-get-started/kubernetes-deploy-helm.html["aqui"]
+* Implante o Trident Operator usando o Helm. Consulte as instruções link:https://docs.netapp.com/us-en/trident/trident-install/kubernetes-deploy-helm.html["aqui"]
 * Crie um backend e uma classe de armazenamento.  Consulte as instruçõeslink:https://docs.netapp.com/us-en/trident/trident-use/backends.html["aqui"] .
 
 

@@ -36,7 +36,7 @@ O processo de configuração pode ser dividido nas seguintes etapas:
 
 
 .Instalar o Trident em clusters ROSA (usando o gráfico Helm)
-* Use o gráfico Helm para instalar o Trident em clusters ROSA.  Consulte o link da documentação: https://docs.netapp.com/us-en/trident/trident-get-started/kubernetes-deploy-helm.html [aqui].
+* Use o gráfico Helm para instalar o Trident em clusters ROSA. Consulte o link da documentação: https://docs.netapp.com/us-en/trident/trident-install/kubernetes-deploy-helm.html[aqui^].
 
 
 .Integração do FSx ONTAP com Trident para clusters ROSA
@@ -58,6 +58,6 @@ image:rhhc-default-storage-class.png["Figura mostrando diálogo de entrada/saíd
 * Configure uma nova instância do Argo CD para o cluster.  Consulte as instruçõeslink:https://docs.openshift.com/container-platform/4.10/cicd/gitops/setting-up-argocd-instance.html["aqui"] .
 
 
-Abra o console do Argo CD e implante um aplicativo.  Como exemplo, você pode implantar um aplicativo Jenkins usando o Argo CD com um Helm Chart.  Ao criar o aplicativo, os seguintes detalhes foram fornecidos: Projeto: cluster padrão:'https://kubernetes.default.svc'[] (sem as aspas) Namespace: Jenkins A URL para o Helm Chart:'https://charts.bitnami.com/bitnami'[] (sem as aspas)
+Abra o console do Argo CD e implante um aplicativo. Como exemplo, você pode implantar um aplicativo Jenkins usando o Argo CD com um Helm Chart. Ao criar o aplicativo, os seguintes detalhes foram fornecidos: Projeto: default cluster: +'https://kubernetes.default.svc'+[] (sem as aspas) Namespace: Jenkins A url do Helm Chart: +'https://charts.bitnami.com/bitnami'+[] (sem as aspas)
 
 Parâmetros do Helm: global.storageClass: fsxn-nas
