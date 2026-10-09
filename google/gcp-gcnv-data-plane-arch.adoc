@@ -16,7 +16,7 @@ summary: O Google Cloud NetApp Volumes para Google Cloud aproveita a estrutura d
 [role="lead"]
 O Google Cloud NetApp Volumes para Google Cloud aproveita o Google Cloud https://cloud.google.com/vpc/docs/configure-private-services-access["acesso a serviços privados"^] estrutura.  Nessa estrutura, os usuários podem se conectar ao Google Cloud NetApp Volumes.  Esta estrutura usa construções de Service Networking e peering de VPC como outros serviços do Google Cloud, garantindo isolamento completo entre locatários.
 
-Para uma visão geral da arquitetura do Google Cloud NetApp Volumes para Google Cloud, consulte https://cloud.google.com/architecture/partners/netapp-cloud-volumes/architecture["Arquitetura para Google Cloud NetApp Volumes"^] .
+Para obter uma visão geral da arquitetura do Google Cloud NetApp Volumes para Google Cloud, consulte https://docs.cloud.google.com/netapp/volumes/docs/discover/overview#netapp_volumes_architecture["Arquitetura para Google Cloud NetApp Volumes"^].
 
 As VPCs de usuário (autônomas ou compartilhadas) são pareadas com VPCs dentro de projetos de locatários gerenciados do Google Cloud NetApp Volumes , que hospedam os volumes.
 

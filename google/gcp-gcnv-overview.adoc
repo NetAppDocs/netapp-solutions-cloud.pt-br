@@ -16,7 +16,7 @@ summary: A segurança, principalmente na nuvem, onde a infraestrutura está fora
 Oliver Krause, Justin Parisi, NetApp
 
 [role="lead"]
-A segurança, principalmente na nuvem, onde a infraestrutura está fora do controle dos administradores de armazenamento, é fundamental para confiar seus dados às ofertas de serviços fornecidas pelos provedores de nuvem.  Este documento é uma visão geral das ofertas de segurança que https://cloud.netapp.com/cloud-volumes-service-for-gcp["O Google Cloud NetApp Volumes fornece no Google Cloud"^] .
+A segurança, especialmente na nuvem, onde a infraestrutura está fora do controle dos administradores de armazenamento, é fundamental para confiar seus dados às ofertas de serviços fornecidas pelos provedores de nuvem. Este documento apresenta uma visão geral das ofertas de segurança que https://www.netapp.com/google-cloud/netapp-volumes/["O Google Cloud NetApp Volumes fornece no Google Cloud"^].
 
 
 
