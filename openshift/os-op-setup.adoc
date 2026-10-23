@@ -37,7 +37,7 @@ O processo de configuração pode ser dividido nas seguintes etapas:
 .Implantar e configurar um cluster do OpenShift Container Platform no VMware vSphere (Hub Cluster)
 [%collapsible%open]
 ====
-Consulte as instruções para olink:https://docs.openshift.com/container-platform/4.17/installing/installing_vsphere/installing-vsphere-assisted-installer.html["Implantação assistida"] método para implantar um cluster OCP.
+Consulte as instruções sobre o link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.17/html/installing_on_vmware_vsphere/installing-vsphere-assisted-installer["Implantação assistida"^]método para implantar um cluster OCP.
 
 
 TIP: Lembre-se do seguinte: - Crie uma chave ssh pública e privada para fornecer ao instalador.  Essas chaves serão usadas para fazer login nos nós mestre e de trabalho, se necessário.  - Baixe o programa instalador do instalador assistido.  Este programa é usado para inicializar as VMs que você cria no ambiente VMware vSphere para os nós mestre e de trabalho.  - As VMs devem ter os requisitos mínimos de CPU, memória e disco rígido.  (Consulte os comandos vm create emlink:https://docs.redhat.com/en/documentation/assisted_installer_for_openshift_container_platform/2024/html/installing_openshift_container_platform_with_the_assisted_installer/installing-on-vsphere["esse"] página para os nós mestre e de trabalho que fornecem essas informações) - O diskUUID deve ser habilitado em todas as VMs.  - Crie no mínimo 3 nós para o mestre e 3 nós para o trabalhador.  - Assim que forem descobertos pelo instalador, ative o botão de alternância de integração do VMware vSphere.
