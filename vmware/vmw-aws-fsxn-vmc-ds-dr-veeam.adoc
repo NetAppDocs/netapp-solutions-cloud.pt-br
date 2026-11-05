@@ -53,7 +53,7 @@ image:dr-veeam-fsx-001.png["Diagrama de cenário de DR usando Veeam Replication 
 === Degraus altos
 
 . O software Veeam Backup and Replication está sendo executado em um ambiente local com conectividade de rede apropriada.
-. Configure o VMware Cloud na AWS, consulte o artigo do VMware Cloud Tech Zonelink:https://vmc.techzone.vmware.com/fsx-guide["Guia de implantação de integração do VMware Cloud on AWS com o Amazon FSx ONTAP"] para implantar, configure o VMware Cloud on AWS SDDC e o FSx ONTAP como armazenamento de dados NFS.  (Um ambiente de luz piloto configurado com uma configuração mínima pode ser usado para fins de DR.  As VMs farão failover para esse cluster no caso de um incidente, e nós adicionais podem ser adicionados).
+. Configure o VMware Cloud on AWS, consulte o artigo do VMware Cloud Tech Zone link:https://www.vmware.com/docs/vmware-cloud-on-aws-integration-with-amazon-fsx-for-netapp-ontap-deployment-guide["Guia de implantação de integração do VMware Cloud on AWS com o Amazon FSx ONTAP"^] para implantar e configurar o VMware Cloud on AWS SDDC e o FSx ONTAP como datastore NFS. (Um ambiente pilot-light configurado com uma configuração mínima pode ser usado para fins de DR. As VMs farão failover para esse cluster em caso de incidente, e você pode adicionar nós adicionais).
 . Configure trabalhos de replicação para criar réplicas de VM usando o Veeam Backup and Replication.
 . Crie um plano de failover e execute o failover.
 . Retorne para as VMs de produção quando o evento de desastre for concluído e o site principal estiver ativo.
