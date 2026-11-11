@@ -52,9 +52,9 @@ O processo de configuração pode ser dividido nas seguintes etapas:
 * Os Google Cloud NetApp Volumes podem ser adicionados aos seus projetos conforme descritolink:https://cloud.google.com/netapp/volumes/docs/discover/overview["aqui"] .
 
 
-.Implantar o Cloud Volumes ONTAP no GCP usando o BlueXP
-* Instale um conector no Google Cloud.  Consulte as instruções https://docs.netapp.com/us-en/bluexp-setup-admin/task-install-connector-google-bluexp-gcloud.html["aqui"] .
-* Implante uma instância CVO no Google Cloud usando o conector.  Consulte as instruções aqui. https://docs.netapp.com/us-en/bluexp-cloud-volumes-ontap/task-getting-started-gcp.html[]
+.Implante o Cloud Volumes ONTAP no GCP usando o NetApp Console
+* Instale um agente do Console no Google Cloud. Consulte as instruções https://docs.netapp.com/us-en/console-setup-admin/task-install-agent-google-console-gcloud.html["aqui"].
+* Implante uma instância do CVO no Google Cloud usando o agente. Consulte as instruções https://docs.netapp.com/us-en/storage-management-cloud-volumes-ontap/task-getting-started-gcp.html["aqui"].
 
 
 .Instalar o Trident no cluster OCP no GCP

@@ -14,7 +14,7 @@ summary:
 
 
 [role="lead"]
-Esta seção descreve um fluxo de trabalho de alto nível de configuração dos clusters do Managed Red Hat OpenShift na AWS (ROSA).  Ele mostra o uso do Amazon FSx for NetApp ONTAP (FSx ONTAP) como backend de armazenamento pela Trident para fornecer volumes persistentes.  São fornecidos detalhes sobre a implantação do FSx ONTAP na AWS usando BlueXP.  Além disso, são fornecidos detalhes sobre o uso do BlueXP e do OpenShift GitOps (Argo CD) para executar atividades de proteção e migração de dados para aplicativos com estado em clusters ROSA.
+Esta seção descreve um fluxo de trabalho de alto nível para configurar os clusters Managed Red Hat OpenShift na AWS (ROSA). Ela mostra o uso do Amazon FSx for NetApp ONTAP (FSx ONTAP) gerenciado como backend de storage pelo Trident para fornecer volumes persistentes. São fornecidos detalhes sobre a implantação do FSx ONTAP na AWS usando o NetApp Console. Além disso, são fornecidos detalhes sobre o uso do NetApp Console e do OpenShift GitOps (Argo CD) para executar atividades de proteção e migração de dados para as aplicações com estado nos clusters ROSA.
 
 Aqui está um diagrama que descreve os clusters ROSA implantados na AWS e usando o FSx ONTAP como armazenamento de backend.
 
@@ -31,7 +31,7 @@ O processo de configuração pode ser dividido nas seguintes etapas:
 
 
 .Instalar FSx ONTAP
-* Instale o FSx ONTAP nas VPCs do BlueXP.  Referirlink:https://docs.netapp.com/us-en/cloud-manager-setup-admin/index.html["aqui"] para criar uma conta BlueXP e começar.  Referirlink:https://docs.netapp.com/us-en/cloud-manager-fsx-ontap/index.html["aqui"] para instalar o FSx ONTAP.  Referirlink:https://docs.netapp.com/us-en/cloud-manager-setup-admin/index.html["aqui"] para criar um conector na AWS para gerenciar o FSx ONTAP.
+* Instale o FSx ONTAP nas VPCs a partir do NetApp Console. Consulte link:https://docs.netapp.com/us-en/console-setup-admin/index.html["aqui"] para criar uma conta no NetApp Console e começar a usar. Consulte link:https://docs.netapp.com/us-en/cloud-manager-fsx-ontap/index.html["aqui"] para instalar o FSx ONTAP. Consulte link:https://docs.netapp.com/us-en/console-setup-admin/index.html["aqui"] para criar um conector na AWS para gerenciar o FSx ONTAP.
 * Implante o FSx ONTAP usando a AWS.  Referirlink:https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/getting-started-step1.html["aqui"] para implantação usando o console da AWS.
 
 
